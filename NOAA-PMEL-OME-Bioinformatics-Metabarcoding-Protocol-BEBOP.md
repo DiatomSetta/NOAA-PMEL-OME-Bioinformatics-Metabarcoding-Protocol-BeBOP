@@ -148,18 +148,23 @@ Insert a short statement explaining why the specific methodology used in the pro
 Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) is used to filter out ASVs, with the following steps:
 
 **1) Estimation of Tag-jumping or Index Hopping.**
+
 Subtract the proportion of reads that jumped into control samples from each environmental sample. Determine which ASVs came from controls vs environmental samples, create a vector of ASVs in positive controls, calculate what proportion of the reads found in the positive controls are found in environment samples, and subtract the composition of the positive controls from the environment samples.
    
 **2) Discarding amples with low number of reads.**
+
 Discard samples with less than 10,000 reads, to filter out samples with low sequencing depth.
 
 **3) Clearance of Negative Control Contaminants.**
+
 Identify contaminant ASVs that occurred in field, extraction, and PCR negative controls using the [microDecon package](https://github.com/donaldtmcknight/microDecon). Compare the prevalence of ASVs in blanks to those in samples and remove contaminant ASVs.
    
 **4) Remove obvious contaminants (e.g. human, rat, cat, dog).**
+
 Remove any ASVs identified as human (*Homo sapiens*), dog (*Canis familiaris*), cat (*Felis catus*), or other common obvious contaminants.
 
 **5) Remove samples that have one ASV making up 99% of total sequences.**
+
 Remove samples dominated (>99% abundance) by one ASV, suggesting an error with sample processing or sequencing.
 
 # PERSONNEL REQUIRED
