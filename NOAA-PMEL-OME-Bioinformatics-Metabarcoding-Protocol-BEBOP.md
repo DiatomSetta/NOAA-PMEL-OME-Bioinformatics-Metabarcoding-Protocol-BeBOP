@@ -63,7 +63,7 @@ output_otu_num:
 otu_num_tax_assigned: 
 ---
 
-# NOAA/AOML Amplicon Analysis Protocol
+# NOAA PMEL OME Bioinformatics Metabarcoding Protocol
 
 ## PROTOCOL INFORMATION
 
@@ -76,7 +76,8 @@ otu_num_tax_assigned:
 
 | PREPARED BY | AFFILIATION | ORCID | DATE |
 | ------------- | ------------- | ------------- | ------------- |
-| Luke Thompson | NOAA/AOML, MSU/NGI | <https://orcid.org/0000-0002-3911-1280> | 2024-12-06 |
+| Sean McAllister | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-6654-3495> | 2025-04-30 |
+| Sam Setta | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9075-7573> | 2025-04-30 |
 
 - All authors known to have contributed to the preparation of this protocol should be listed, including those who filled in the template.
 - Visit <https://orcid.org/> to register for an ORCID.
@@ -85,7 +86,7 @@ otu_num_tax_assigned:
 
 | VERSION | RELEASE DATE | DESCRIPTION OF REVISIONS |
 | ------------- | ------------- | ------------- |
-| 1.0.0 | 2024-12-06 | Initial release |
+| 1.0.0 | 202?-MM-DD | Initial release |
 
 - Version numbers start at 1.0.0 when the protocol is first completed and will increase when changes that impact the outcome of the procedure are made (patches: 1.0.1; minor changes: 1.1.0; major changes: 2.0.0).
 - Release date is the date when a given protocol version was finalised.
