@@ -77,7 +77,8 @@ otu_num_tax_assigned:
 | PREPARED BY | AFFILIATION | ORCID | DATE |
 | ------------- | ------------- | ------------- | ------------- |
 | Sean McAllister | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-6654-3495> | 2025-04-30 |
-| Sam Setta | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9075-7573> | 2025-04-30 |
+| Samantha Setta | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9075-7573> | 2025-04-30 |
+| Zachary Gold | Ocean Molecular Ecology, NOAA PMEL | <https://orcid.org/0000-0003-0490-7630> | 2025-04-30 |
 
 - All authors known to have contributed to the preparation of this protocol should be listed, including those who filled in the template.
 - Visit <https://orcid.org/> to register for an ORCID.
@@ -119,9 +120,9 @@ This is a list of other protocols that are not in your folder which should be kn
 | ACRONYM / ABBREVIATION | DEFINITION |
 | ------------- | ------------- |
 | NOAA | National Oceanographic and Atmospheric Administration |
-| AOML | Atlantic Oceanographic and Meteorological Laboratory |
-| MSU | Mississippi State University |
-| NGI | Northern Gulf Institute |
+| PMEL | Pacific Marine Environmental Laboratory |
+| UW | University of Washington |
+| CICOES | Cooperative Institute for Climate, Ocean, and Ecosystem Studies |
 
 ## GLOSSARY
 
