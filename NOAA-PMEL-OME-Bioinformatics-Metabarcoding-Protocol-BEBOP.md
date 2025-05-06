@@ -1,26 +1,26 @@
 ---
 # MIOP terms
-methodology category: 
-project: 
+methodology category: Omics Analysis
+project: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group protocols
 purpose: 
 analyses: 
-geographic location: 
-broad-scale environmental context: 
-local environmental context: 
-environmental medium: 
+geographic location: North East Pacific Ocean [GAZ:00013765], Bering Sea [GAZ:00008990], Arctic Ocean [GAZ:00000323]
+broad-scale environmental context: marine biome [ENVO:00000447], marine photic zone [ENVO:00000209]
+local environmental context: oceanic epipelagic zone biome [ENVO:01000035], marine biome [ENVO:00000447], marine benthic biome [ENVO:01000024]
+environmental medium: sea water [ENVO:00002149]
 target: 
-creator: 
+creator: Samantha Setta, Sean McAllister, Zachary Gold
 materials required: 
 skills required: 
 time required: 
-personnel required: 
-language: 
+personnel required: 1
+language: en
 issued: 
-audience: 
-publisher: 
-hasVersion: 
-license: 
-maturity level: 
+audience: scientists
+publisher: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group; University of Washington Cooperative Institute for Climate, Ocean, & Ecosystem Studies
+hasVersion: 1
+license: CC0 1.0 Universal
+maturity level: mature
 
 # FAIRe terms
 sop_bioinformatics: 
