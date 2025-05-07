@@ -78,6 +78,7 @@ otu_num_tax_assigned:
 | ------------- | ------------- | ------------- | ------------- |
 | Sean McAllister | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-6654-3495> | 2025-04-30 |
 | Samantha Setta | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9075-7573> | 2025-04-30 |
+| Shannon Brown | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9808-2638> | 2025-04-30 |
 | Zachary Gold | Ocean Molecular Ecology, NOAA PMEL | <https://orcid.org/0000-0003-0490-7630> | 2025-04-30 |
 
 - All authors known to have contributed to the preparation of this protocol should be listed, including those who filled in the template.
@@ -119,10 +120,17 @@ This is a list of other protocols that are not in your folder which should be kn
 
 | ACRONYM / ABBREVIATION | DEFINITION |
 | ------------- | ------------- |
+| 12S | 12S ribosomal nucleic acid sequencing gene region |
+| 16Sv4 | 16S ribosomal nucleic acid V4 gene region |
+| 18Sv4 | 18S ribosomal nucleic acid V4 gene region |
+| 18Sv9 | 18S ribosomal nucleic acid V9 gene region |
+| ASV | Amplicon Sequencing Variant |
+| CICOES | Cooperative Institute for Climate, Ocean, and Ecosystem Studies |
+| COI | Cytochrome c oxidase subunit I gene region |
+| ITS1 | Internal Transcribed Spacer 1 region |
 | NOAA | National Oceanographic and Atmospheric Administration |
 | PMEL | Pacific Marine Environmental Laboratory |
 | UW | University of Washington |
-| CICOES | Cooperative Institute for Climate, Ocean, and Ecosystem Studies |
 
 ## GLOSSARY
 
@@ -145,9 +153,15 @@ Please provide a brief summary of your method including, as appropriate, a brief
 Insert a short description of the functioning principal of the methodology used in the protocol (i.e. how does the method work?). Please note that this is different from the step-by-step description of the protocol procedure.
 Insert a short statement explaining why the specific methodology used in the protocol has been selected (e.g. it is highly reproducible, highly accurate, procedures are easy to execute etc….).
 
+## Taxonomic Classification
+
+Taxonomic classification occurs after ASV assignment and varies by metabarcoding marker region. 
+
+The 18Sv4 rRNA, 18Sv9 rRNA, 16Sv4 rRNA, and ITS1 regions are classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers are trained using the [PR2 database(v5.1.0)](https://pr2-database.org/) (Guillou et al., 2012) for 18Sv4 rRNA and 18Sv9 rRNA, [silva (v138.99)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013), and a [custom curated database](https://zenodo.org/records/15351664) for the ITS1 region. Before training classifiers, regions of interest are extracted with primers used for amplification (REF??), afterwards sequences from the database are added back by sequence similarity to the extracted sequences to capture all sequences that did not contain both primers.
+
 ## Decontamination steps
 
-Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) is used to filter out ASVs, with the following steps:
+Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) (Davis et al., 2018) is used to filter out ASVs, with the following steps:
 
 **1) Estimation of Tag-jumping or Index Hopping.**
 
@@ -254,7 +268,13 @@ Provide troubleshooting guidelines when available.
 
 # REFERENCES
 
+Bolyen, E., Rideout, J.R., Dillon, M.R. et al. Reproducible, interactive, scalable and extensible microbiome data science using QIIME 2. Nat Biotechnol 37, 852–857 (2019). [https://doi.org/10.1038/s41587-019-0209-9](https://doi.org/10.1038/s41587-019-0209-9)
+
 Davis, N.M., Proctor, D.M., Holmes, S.P. Relman, D.A., & Callahan, B.J. (2018). Simple statistical identification and removal of contaminant sequences in marker-gene and metagenomics data. Microbiome 6, 226. [https://doi.org/10.1186/s40168-018-0605-2](https://doi.org/10.1186/s40168-018-0605-2)
+
+Guillou, L., Bachar, D., Audic, S., Bass, D., Berney, C., Bittner, L., ... & Christen, R. (2012). The Protist Ribosomal Reference database (PR2): a catalog of unicellular eukaryote small sub-unit rRNA sequences with curated taxonomy. Nucleic acids research, 41(D1), D597-D604. [https://doi.org/10.1093/nar/gks1160](https://doi.org/10.1093/nar/gks1160)
+
+Quast C, Pruesse E, Yilmaz P, Gerken J, Schweer T, Yarza P, Peplies J, Glöckner FO (2013) The SILVA ribosomal RNA gene database project: improved data processing and web-based tools. Opens external link in new windowNucl. Acids Res. 41 (D1): D590-D596.[https://doi.org/10.1093/nar/gks1219](https://doi.org/10.1093/nar/gks1219)
 
 # APPENDIX A: DATASHEETS
 
