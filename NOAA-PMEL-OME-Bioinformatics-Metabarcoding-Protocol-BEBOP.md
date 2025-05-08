@@ -157,7 +157,35 @@ Insert a short statement explaining why the specific methodology used in the pro
 
 Taxonomic classification occurs after ASV assignment and varies by metabarcoding marker region. 
 
-The 18Sv4 rRNA, 18Sv9 rRNA, 16Sv4 rRNA, and ITS1 regions are classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers are trained using the [PR2 database(v5.1.0)](https://pr2-database.org/) (Guillou et al., 2012) for 18Sv4 rRNA and 18Sv9 rRNA, [silva (v138.99)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013), and a [custom curated database](https://zenodo.org/records/15351664) for the ITS1 region. Before training classifiers, regions of interest are extracted with primers used for amplification (REF??), afterwards sequences from the database are added back by sequence similarity to the extracted sequences to capture all sequences that did not contain both primers.
+The 18Sv4 rRNA, 18Sv9 rRNA, 16Sv4 rRNA, and ITS1 regions are classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers are trained using the [PR2 database(v5.1.0)](https://pr2-database.org/) (Guillou et al., 2012) for 18Sv4 rRNA and 18Sv9 rRNA, [silva (v138.99)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013), and a [custom curated database](https://zenodo.org/records/15351664) for the ITS1 region. Each database is curated, extracted to the region of interest, and used to train a naive bayesian taxonomic classifier by:
+
+1) Extracting the region of interest from all sequences in the database with primers used for amplification (see [NOAA PMEL OME Github](https://github.com/NOAA-PMEL/Ocean-Molecular-Ecology)).
+```
+qiime feature-classifier extract-reads
+# --p-min-length and --p-max-length vary by region and are included in the config file.
+```
+2) Adding sequences that contain the region of interest but do not contain the primer region by alignment to the extracted sequence database. This step is done twice for some metabarcoding regions until ~50-70% of query sequences are retained following [recommendations](https://forum.qiime2.org/t/using-rescripts-extract-seq-segments-to-extract-reference-sequences-without-pcr-primer-pairs/23618) for qiime2 scikit-learn classifiers (see config file).
+```
+qiime rescript extract-seq-segments
+# --p-perc-identity and --p-min-seq-len vary by region and are included in the config file.
+```
+3) Taxa of sequences no longer in the database are filtered out.
+```
+qiime rescript filter-taxa
+```
+4) Sequences are dereplicated to remove any duplicates.
+```
+qiime rescript dereplicate
+# --p-mode uniq
+```
+5) The taxonomic classifier for each region of interest is trained using qiime2's feature-classifier.
+```
+qiime feature-classifier fit-classifier-naive-bayes
+```
+6) The trained classifiers are used to classify ASVs using qiime2's feature classifier.
+```
+qiime tools export
+```
 
 ## Decontamination steps
 
