@@ -98,7 +98,7 @@ otu_num_tax_assigned:
 
 NEED TO EDIT HEADINGS BELOW...
 
-## RELATED PROTOCOLS IN YOUR FOLDER
+### RELATED PROTOCOLS IN YOUR FOLDER
 
 This is a list of other protocols deposited in your folder which should be known to users of this protocol. For example, if you create a derivative or altered protocol, you would link to the original protocol in the section below. Please include the link to each related protocol. Also include the version number of that protocol when you linked to it.
 
@@ -107,7 +107,7 @@ This is a list of other protocols deposited in your folder which should be known
 | Content Cell  | Content Cell  | yyyy-mm-dd  |
 | Content Cell  | Content Cell  | yyyy-mm-dd  |
 
-## RELATED EXTERNAL PROTOCOLS
+### RELATED EXTERNAL PROTOCOLS
 
 This is a list of other protocols that are not in your folder which should be known to users of this protocol. These include, e.g., kit manuals. Please upload all relevant external protocols to Appendix A and link to them here.
 
@@ -132,28 +132,32 @@ This is a list of other protocols that are not in your folder which should be kn
 | PMEL | Pacific Marine Environmental Laboratory |
 | UW | University of Washington |
 
-## GLOSSARY
+### GLOSSARY
 
 | SPECIALISED TERM | DEFINITION |
 | ------------- | ------------- |
 | Content Cell  | Content Cell  |
 | Content Cell  | Content Cell  |
 
-# BACKGROUND
+## BACKGROUND
 
 This document describes the required protocol to conduct insert name of the method/protocol.
 
-## Summary
+### Summary
 
 Insert a short description of the background for the method/protocol (e.g. why and for which purpose do you perform water sampling).
 Please provide a brief summary of your method including, as appropriate, a brief description of what techniques your best practice is about, which ocean environments or regions it targets, the primary sensors covered, what type of data/measurements/observing platform it covers, limits to its applicability.
 
-## Method description and rationale
+### Method description and rationale
 
 Insert a short description of the functioning principal of the methodology used in the protocol (i.e. how does the method work?). Please note that this is different from the step-by-step description of the protocol procedure.
 Insert a short statement explaining why the specific methodology used in the protocol has been selected (e.g. it is highly reproducible, highly accurate, procedures are easy to execute etc….).
 
-## Taxonomic Classification
+## STANDARD OPERATING PROCEDURE
+
+### Raw Data Download and QA/QC
+
+### Taxonomic Classification
 
 Taxonomic classification occurs after ASV assignment and varies by metabarcoding marker region. 
 
@@ -187,7 +191,7 @@ qiime feature-classifier fit-classifier-naive-bayes
 qiime tools export
 ```
 
-## Decontamination steps
+### Decontamination steps
 
 Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) (Davis et al., 2018) is used to filter out ASVs, with the following steps:
 
@@ -195,7 +199,7 @@ Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASV
 
 Subtract the proportion of reads that jumped into control samples from each environmental sample. Determine which ASVs came from controls vs environmental samples, create a vector of ASVs in positive controls, calculate what proportion of the reads found in the positive controls are found in environment samples, and subtract the composition of the positive controls from the environment samples.
    
-**2) Discarding amples with low number of reads.**
+**2) Discarding samples with low number of reads.**
 
 Discard samples with less than 10,000 reads, to filter out samples with low sequencing depth.
 
