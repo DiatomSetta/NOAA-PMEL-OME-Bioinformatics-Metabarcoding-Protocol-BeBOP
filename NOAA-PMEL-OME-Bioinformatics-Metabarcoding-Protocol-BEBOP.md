@@ -23,44 +23,38 @@ license: CC0 1.0 Universal
 maturity level: mature
 
 # FAIRe terms
-sop_bioinformatics: 
-trim_method: 
-trim_param: 
-demux_tool: 
-demux_max_mismatch: 
-merge_tool: 
-merge_min_overlap: 
-min_len_cutoff: 
-min_len_tool: 
-error_rate_tool: 
-error_rate_type: 
-error_rate_cutoff: 
-chimera_check_method: 
-chimera_check_param: 
-otu_clust_tool: 
-otu_clust_cutoff: 
-min_reads_cutoff: 
-min_reads_cutoff_unit: 
-min_reads_tool: 
-otu_db: 
-otu_db_custom: 
-tax_assign_cat: 
-otu_seq_comp_appr: 
-tax_class_id_cutoff: 
-tax_class_query_cutoff: 
-tax_class_collapse: 
-tax_class_other: 
-screen_contam_method: 
-screen_geograph_method: 
-screen_nontarget_method: 
-screen_other: 
-otu_raw_description: 
-otu_final_description: 
-bioinfo_method_additional: 
-input_read_count: 
-output_read_count: 
-output_otu_num: 
-otu_num_tax_assigned: 
+sop_bioinformatics: this_DOI (paste link when published)
+trim_method: #1) Cutadapt (Martin, 2011), primer trimming. #2) DADA2 (Callahan et al., 2016), filterAndTrim (quality and length trimming).
+trim_param: #1) Cutadapt, -a "${primerF};required...${revcomp_primerR};optional", -A "${primerR};required...${revcomp_primerF};optional", --discard-untrimmed, -m 1. #2) DADA2, see REVAMP config file (dada_trunQ, dada_trimRight, dada_trimLeft).
+merge_tool: DADA2 (Callahan et al., 2016), mergePairs
+merge_min_overlap: 20
+min_len_cutoff: See REVAMP config file (dada_minlength)
+min_len_tool: DADA2 (Callahan et al., 2016)
+error_rate_tool: DADA2 (Callahan et al., 2016)
+error_rate_type: expected error rate
+error_rate_cutoff: See REVAMP config file (dada_maxEE1, dada_maxEE2)
+chimera_check_method: DADA2 (Callahan et al., 2016), removeBimeraDenovo
+chimera_check_param: not applicable
+otu_clust_tool: DADA2 (Callahan et al., 2016), pool="pseudo"
+otu_clust_cutoff: 100
+min_reads_cutoff: 2 (unless modified by decontamination protocol)
+min_reads_cutoff_unit: reads
+min_reads_tool: DADA2 (Callahan et al., 2016)
+otu_db: Varies with taxonomic classification tool (see below)
+otu_db_custom: Varies with taxonomic classification tool (see below)
+tax_assign_cat: Varies with taxonomic classification tool (see below)
+otu_seq_comp_appr: Varies with taxonomic classification tool (see below)
+tax_class_id_cutoff: Varies with taxonomic classification tool (see below)
+tax_class_query_cutoff: Varies with taxonomic classification tool (see below)
+tax_class_collapse: Varies with taxonomic classification tool (see below)
+tax_class_other: Varies with taxonomic classification tool (see below)
+screen_contam_method: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
+screen_geograph_method: not applicable
+screen_nontarget_method: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
+screen_other: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
+otu_raw_description: No filtering outside of DADA2 default ASV denoising
+otu_final_description: this_DOI (link to decontamination screening section)
+bioinfo_method_additional: this_DOI (paste link when published)
 ---
 
 # NOAA PMEL OME Bioinformatics Metabarcoding Protocol
@@ -76,7 +70,7 @@ otu_num_tax_assigned:
 
 | PREPARED BY | AFFILIATION | ORCID | DATE |
 | ------------- | ------------- | ------------- | ------------- |
-| Sean McAllister | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-6654-3495> | 2025-04-30 |
+| Sean McAllister | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-6654-3495> | 2025-05-08 |
 | Samantha Setta | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9075-7573> | 2025-04-30 |
 | Shannon Brown | Ocean Molecular Ecology, NOAA PMEL & UW CICOES | <https://orcid.org/0000-0001-9808-2638> | 2025-04-30 |
 | Zachary Gold | Ocean Molecular Ecology, NOAA PMEL | <https://orcid.org/0000-0003-0490-7630> | 2025-04-30 |
@@ -88,7 +82,7 @@ otu_num_tax_assigned:
 
 | VERSION | RELEASE DATE | DESCRIPTION OF REVISIONS |
 | ------------- | ------------- | ------------- |
-| 1.0.0 | 202?-MM-DD | Initial release |
+| 1.0.0 | 2025-MM-DD | Initial release |
 
 - Version numbers start at 1.0.0 when the protocol is first completed and will increase when changes that impact the outcome of the procedure are made (patches: 1.0.1; minor changes: 1.1.0; major changes: 2.0.0).
 - Release date is the date when a given protocol version was finalised.
