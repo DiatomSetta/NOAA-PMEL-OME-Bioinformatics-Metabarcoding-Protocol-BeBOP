@@ -24,22 +24,22 @@ maturity level: mature
 
 # FAIRe terms
 sop_bioinformatics: this_DOI (paste link when published)
-trim_method: #1) Cutadapt (Martin, 2011), primer trimming. #2) DADA2 (Callahan et al., 2016), filterAndTrim (quality and length trimming).
+trim_method: #1) Cutadapt, primer trimming. #2) DADA2, filterAndTrim (quality and length trimming).
 trim_param: #1) Cutadapt, -a "${primerF};required...${revcomp_primerR};optional", -A "${primerR};required...${revcomp_primerF};optional", --discard-untrimmed, -m 1. #2) DADA2, see REVAMP config file (dada_trunQ, dada_trimRight, dada_trimLeft).
-merge_tool: DADA2 (Callahan et al., 2016), mergePairs
+merge_tool: DADA2, mergePairs
 merge_min_overlap: 20
 min_len_cutoff: See REVAMP config file (dada_minlength)
-min_len_tool: DADA2 (Callahan et al., 2016)
-error_rate_tool: DADA2 (Callahan et al., 2016)
+min_len_tool: DADA2
+error_rate_tool: DADA2
 error_rate_type: expected error rate
 error_rate_cutoff: See REVAMP config file (dada_maxEE1, dada_maxEE2)
-chimera_check_method: DADA2 (Callahan et al., 2016), removeBimeraDenovo
+chimera_check_method: DADA2, removeBimeraDenovo
 chimera_check_param: not applicable
-otu_clust_tool: DADA2 (Callahan et al., 2016), pool="pseudo"
+otu_clust_tool: DADA2, pool="pseudo"
 otu_clust_cutoff: 100
 min_reads_cutoff: 2 (unless modified by decontamination protocol)
 min_reads_cutoff_unit: reads
-min_reads_tool: DADA2 (Callahan et al., 2016)
+min_reads_tool: DADA2
 otu_db: Varies with taxonomic classification tool (see below)
 otu_db_custom: Varies with taxonomic classification tool (see below)
 tax_assign_cat: Varies with taxonomic classification tool (see below)
@@ -147,9 +147,32 @@ Please provide a brief summary of your method including, as appropriate, a brief
 Insert a short description of the functioning principal of the methodology used in the protocol (i.e. how does the method work?). Please note that this is different from the step-by-step description of the protocol procedure.
 Insert a short statement explaining why the specific methodology used in the protocol has been selected (e.g. it is highly reproducible, highly accurate, procedures are easy to execute etc….).
 
+Data is run through this standard operating procedure at the sequencing run level, including all samples from the run, regardless of source project. The purpose of this is to maintain reproducibility and operate DADA2 as intended, allowing for proper error learning.
+
 ## STANDARD OPERATING PROCEDURE
 
 ### Raw Data Download and QA/QC
+
+Raw reads (fastq.gz) are provided by the sequencing center demultiplexed by sample and marker (see sequencing center BeBops listed in RELATED PROTOCOLS). On downloading reads to the local compute infrastructure, fidelity of the downloaded file is checked via a `md5sum` check. Md5s are either supplied by the sequencing center with the original download (fastq.gz.md5) or are provided separately.
+
+To check the quality of the sequencing run, [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is run on all fastq files (`~/path/to/FastQC/fastqc -o fastqc -t 10 *gz`). In addition for checking the run for a number of quality statistics, the "Per base sequence quality" is used to determine the best cutoff for the `dada_trimRight` (number of bases to trim from right or end of sequence) and `dada_trimLeft` (number of bases to trim from the left or start of sequence) parameters for the REVAMP configuration file.
+
+### Rapid Exploration and Visualization through an Automated Metabarcoding Pipeline (REVAMP)
+
+[REVAMP](https://github.com/McAllister-NOAA/REVAMP) ([McAllister et al., 2023](https://doi.org/10.5670/oceanog.2023.231)) is a published metabarcoding pipeline that integrates several tools for read processing, amplicon sequence variant (ASV) assignment, taxonomic assignment, and basic data visualization. The front end of REVAMP, including read trimming and ASV assignment, is used for all markers to produce a consistent set of ASVs to work from for downstream analysis. Taxonomic assignment in REVAMP is also used for downstream analysis on all markers, though some have additional alternative taxonomic classification methods (detailed below).
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Taxonomic Classification
 
@@ -301,6 +324,12 @@ Davis, N.M., Proctor, D.M., Holmes, S.P. Relman, D.A., & Callahan, B.J. (2018). 
 Guillou, L., Bachar, D., Audic, S., Bass, D., Berney, C., Bittner, L., ... & Christen, R. (2012). The Protist Ribosomal Reference database (PR2): a catalog of unicellular eukaryote small sub-unit rRNA sequences with curated taxonomy. Nucleic acids research, 41(D1), D597-D604. [https://doi.org/10.1093/nar/gks1160](https://doi.org/10.1093/nar/gks1160)
 
 Quast C, Pruesse E, Yilmaz P, Gerken J, Schweer T, Yarza P, Peplies J, Glöckner FO (2013) The SILVA ribosomal RNA gene database project: improved data processing and web-based tools. Opens external link in new windowNucl. Acids Res. 41 (D1): D590-D596.[https://doi.org/10.1093/nar/gks1219](https://doi.org/10.1093/nar/gks1219)
+
+DADA2 Callahan et al., 2016
+
+Cutadapt (Martin, 2011)
+
+REVAMP ([McAllister et al., 2023]
 
 # APPENDIX A: DATASHEETS
 
