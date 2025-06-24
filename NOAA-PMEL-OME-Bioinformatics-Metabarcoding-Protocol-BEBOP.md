@@ -55,6 +55,39 @@ screen_other: Applicable to GBIF/OBIS submission. Not applicable to NODE submiss
 otu_raw_description: No filtering outside of DADA2 default ASV denoising
 otu_final_description: this_DOI (link to decontamination screening section)
 bioinfo_method_additional: this_DOI (paste link when published)
+
+# NOAA FAIRe terms
+discard_untrimmed: 1
+qiime2_version: not applicable
+tourmaline_asv_method: not applicable
+dada2_trunc_len_f: 
+dada2pe_trunc_len_r:
+dada2_trim_left_f:
+dada2pe_trim_left_r:
+dada2_trim_right_f:
+dada2pe_trim_right_r:
+dada2_max_ee_f:
+dada2pe_max_ee_r:
+dada2_trunc_q: 
+dada2_pooling_method: pseudo
+dada2_chimera_method: removeBimeraDenovo, consensus
+dada2_min_fold_parent_over_abundance: not applicable
+dada2_n_reads_learn: all reads
+deblur_trim_length: not applicable
+deblur_mean_error: not applicable
+deblur_indel_prob: not applicable
+deblur_indel_max: not applicable
+deblur_min_reads: not applicable
+deblur_min_size: not applicable
+repseqs_min_abundance: not applicable
+repseqs_min_length: not applicable
+repseqs_max_length: not applicable
+repseqs_min_prevalence: not applicable
+skl_confidence: not applicable
+min_consensus: not applicable
+tourmaline_classify_method: not applicable
+blca_confidence: not applicable
+
 ---
 
 # NOAA PMEL OME Bioinformatics Metabarcoding Protocol
