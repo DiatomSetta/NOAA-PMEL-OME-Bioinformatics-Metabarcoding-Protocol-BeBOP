@@ -33,7 +33,7 @@ min_len_tool: DADA2
 error_rate_tool: DADA2
 error_rate_type: expected error rate
 error_rate_cutoff: See REVAMP config file (dada_maxEE1, dada_maxEE2)
-chimera_check_method: DADA2, removeBimeraDenovo
+chimera_check_method: DADA2, removeBimeraDenovo, consensus
 chimera_check_param: not applicable
 otu_clust_tool: DADA2, pool="pseudo"
 otu_clust_cutoff: 100
@@ -60,15 +60,15 @@ bioinfo_method_additional: this_DOI (paste link when published)
 discard_untrimmed: 1
 qiime2_version: not applicable
 tourmaline_asv_method: not applicable
-dada2_trunc_len_f: 
-dada2pe_trunc_len_r:
-dada2_trim_left_f:
-dada2pe_trim_left_r:
-dada2_trim_right_f:
-dada2pe_trim_right_r:
-dada2_max_ee_f:
-dada2pe_max_ee_r:
-dada2_trunc_q: 
+dada2_trunc_len_f: not applicable
+dada2pe_trunc_len_r: not applicable
+dada2_trim_left_f: dada_trimLeft
+dada2pe_trim_left_r: dada_trimLeft
+dada2_trim_right_f: dada_trimRight
+dada2pe_trim_right_r: dada_trimRight
+dada2_max_ee_f: dada_maxEE1
+dada2pe_max_ee_r: dada_maxEE2
+dada2_trunc_q: dada_trunQ
 dada2_pooling_method: pseudo
 dada2_chimera_method: removeBimeraDenovo, consensus
 dada2_min_fold_parent_over_abundance: not applicable
