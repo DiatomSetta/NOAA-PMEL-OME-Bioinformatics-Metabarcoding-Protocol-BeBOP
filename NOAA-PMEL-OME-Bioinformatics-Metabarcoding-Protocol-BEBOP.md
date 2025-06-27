@@ -32,7 +32,7 @@ min_len_cutoff: {dada_minlength}
 min_len_tool: DADA2
 error_rate_tool: DADA2
 error_rate_type: expected error rate
-error_rate_cutoff: {dada_maxEE1} | {dada_maxEE2}
+error_rate_cutoff: '{dada_maxEE1} | {dada_maxEE2}'
 chimera_check_method: 'DADA2, removeBimeraDenovo, consensus'
 chimera_check_param: not applicable
 otu_clust_tool: 'DADA2, pool="pseudo"'
