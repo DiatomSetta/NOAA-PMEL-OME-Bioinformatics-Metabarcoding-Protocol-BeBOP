@@ -24,35 +24,35 @@ maturity level: mature
 
 # FAIRe terms
 sop_bioinformatics: this_DOI (paste link when published)
-trim_method: #1) Cutadapt, primer trimming. #2) DADA2, filterAndTrim (quality and length trimming).
-trim_param: #1) Cutadapt, -a "${primerF};required...${revcomp_primerR};optional", -A "${primerR};required...${revcomp_primerF};optional", --discard-untrimmed, -m 1. #2) DADA2, see REVAMP config file (dada_trunQ, dada_trimRight, dada_trimLeft).
-merge_tool: DADA2, mergePairs
+trim_method: '1) Cutadapt, primer trimming. 2) DADA2, filterAndTrim (quality and length trimming).'
+trim_param: '1) Cutadapt, -a "{primerF};required...{revcomp_primerR};optional", -A "{primerR};required...{revcomp_primerF};optional", --discard-untrimmed, -m 1. 2) DADA2, trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}.'
+merge_tool: 'DADA2, mergePairs'
 merge_min_overlap: 20
-min_len_cutoff: See REVAMP config file (dada_minlength)
+min_len_cutoff: {dada_minlength}
 min_len_tool: DADA2
 error_rate_tool: DADA2
-error_rate_type: expected error rate
-error_rate_cutoff: See REVAMP config file (dada_maxEE1, dada_maxEE2)
-chimera_check_method: DADA2, removeBimeraDenovo, consensus
+error_rate_type: 'expected error rate'
+error_rate_cutoff: {dada_maxEE1} | {dada_maxEE2}
+chimera_check_method: 'DADA2, removeBimeraDenovo, consensus'
 chimera_check_param: not applicable
-otu_clust_tool: DADA2, pool="pseudo"
+otu_clust_tool: 'DADA2, pool="pseudo"'
 otu_clust_cutoff: 100
-min_reads_cutoff: 2 (unless modified by decontamination protocol)
+min_reads_cutoff: 2 (unless modified by decontamination protocol TBD)
 min_reads_cutoff_unit: reads
 min_reads_tool: DADA2
-otu_db: Varies with taxonomic classification tool (see below)
-otu_db_custom: Varies with taxonomic classification tool (see below)
-tax_assign_cat: Varies with taxonomic classification tool (see below)
-otu_seq_comp_appr: Varies with taxonomic classification tool (see below)
-tax_class_id_cutoff: Varies with taxonomic classification tool (see below)
-tax_class_query_cutoff: Varies with taxonomic classification tool (see below)
-tax_class_collapse: Varies with taxonomic classification tool (see below)
-tax_class_other: Varies with taxonomic classification tool (see below)
-screen_contam_method: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
+otu_db: 'Varies with taxonomic classification tool (see below)'
+otu_db_custom: 'Varies with taxonomic classification tool (see below)'
+tax_assign_cat: 'Varies with taxonomic classification tool (see below)'
+otu_seq_comp_appr: 'Varies with taxonomic classification tool (see below)'
+tax_class_id_cutoff: 'Varies with taxonomic classification tool (see below)'
+tax_class_query_cutoff: 'Varies with taxonomic classification tool (see below)'
+tax_class_collapse: 'Varies with taxonomic classification tool (see below)'
+tax_class_other: 'Varies with taxonomic classification tool (see below)'
+screen_contam_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
 screen_geograph_method: not applicable
-screen_nontarget_method: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
-screen_other: Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below
-otu_raw_description: No filtering outside of DADA2 default ASV denoising
+screen_nontarget_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
+screen_other: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
+otu_raw_description: 'No filtering outside of DADA2 default ASV denoising'
 otu_final_description: this_DOI (link to decontamination screening section)
 bioinfo_method_additional: this_DOI (paste link when published)
 
@@ -62,17 +62,17 @@ qiime2_version: not applicable
 tourmaline_asv_method: not applicable
 dada2_trunc_len_f: not applicable
 dada2pe_trunc_len_r: not applicable
-dada2_trim_left_f: See REVAMP config file (dada_trimLeft)
-dada2pe_trim_left_r: See REVAMP config file (dada_trimLeft)
-dada2_trim_right_f: See REVAMP config file (dada_trimRight)
-dada2pe_trim_right_r: See REVAMP config file (dada_trimRight)
-dada2_max_ee_f: See REVAMP config file (dada_maxEE1)
-dada2pe_max_ee_r: See REVAMP config file (dada_maxEE2)
-dada2_trunc_q: See REVAMP config file (dada_trunQ)
+dada2_trim_left_f: {dada_trimLeft}
+dada2pe_trim_left_r: {dada_trimLeft}
+dada2_trim_right_f: {dada_trimRight}
+dada2pe_trim_right_r: {dada_trimRight}
+dada2_max_ee_f: {dada_maxEE1}
+dada2pe_max_ee_r: {dada_maxEE2}
+dada2_trunc_q: {dada_trunQ}
 dada2_pooling_method: pseudo
-dada2_chimera_method: removeBimeraDenovo, consensus
+dada2_chimera_method: 'removeBimeraDenovo, consensus'
 dada2_min_fold_parent_over_abundance: not applicable
-dada2_n_reads_learn: all reads
+dada2_n_reads_learn: 2016000000
 deblur_trim_length: not applicable
 deblur_mean_error: not applicable
 deblur_indel_prob: not applicable
