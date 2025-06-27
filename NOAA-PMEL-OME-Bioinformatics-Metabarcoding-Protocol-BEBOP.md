@@ -24,8 +24,8 @@ maturity level: mature
 
 # FAIRe terms
 sop_bioinformatics: this_DOI (paste link when published)
-trim_method: '1) Cutadapt, primer trimming. 2) DADA2, filterAndTrim (quality and length trimming).'
-trim_param: '1) Cutadapt, -a "{primerF};required...{revcomp_primerR};optional", -A "{primerR};required...{revcomp_primerF};optional", --discard-untrimmed, -m 1. 2) DADA2, trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}.'
+trim_method: 'Cutadapt, primer trimming | DADA2, filterAndTrim (quality and length trimming)'
+trim_param: 'Cutadapt, -a "{primerF};required...{revcomp_primerR};optional", -A "{primerR};required...{revcomp_primerF};optional", --discard-untrimmed, -m 1 | DADA2, trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}'
 merge_tool: 'DADA2, mergePairs'
 merge_min_overlap: 20
 min_len_cutoff: {dada_minlength}
