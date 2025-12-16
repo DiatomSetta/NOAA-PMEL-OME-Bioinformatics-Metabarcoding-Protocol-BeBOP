@@ -156,7 +156,7 @@ otu_final_description: this_DOI (link to decontamination screening section)
 bioinfo_method_additional: this_DOI (paste link when published)
 
 # NOAA PMEL Ocean Molecular Ecology terms
-asv_method
+asv_method:
 discard_untrimmed: 1
 qiime2_version: not applicable
 tourmaline_asv_method: not applicable
