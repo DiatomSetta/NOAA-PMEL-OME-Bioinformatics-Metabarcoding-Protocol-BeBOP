@@ -134,7 +134,7 @@ tax_class_collapse:
    - scikit-learn-silva:
       default: TBD check - 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
    - Anacapa:
-      default: 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
+      default: TBD check - 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
 tax_class_other: not applicable
 screen_geograph_method: not applicable
 screen_contam_0_1:
@@ -144,42 +144,57 @@ screen_contam_0_1:
       default: 1
    - final-filtered:
       default: 1
-screen_contam_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
-
-
-
-
-screen_nontarget_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
-screen_other: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
+screen_contam_method: 'TBD check - 1) The composition of the positive control is used to estimate a maximum vector contamination, which is then subtracted proportionally from all ASVs in the run to remove background tag jumping. 2) Next negative control contaminants are removed either as a wholesale removal of the impacted ASV, or as a proportional removal. 3) ASVs assigned to common contaminants are removed: human, food products, pets, common lab/consumable contaminants, laboratory controls.'
+screen_nontarget_method: 'TBD check - 1) Contaminanting off-target organisms were removed as described in screen_contam_method, removing common contaminants including human, food products, pets, common lab/consumable contaminants, laboratory controls. 2) Off-target organisms amplified as a result of assay specificity were removed based on the assay expected length or taxonomy.'
+screen_other:
+   - quality-filtered:
+      default: 'TBD check - In addition to the screening in screen_contam_method and screen_nontarget_method: 1) Remove positive and negative control samples. 2) Extreme low read depth sample removal. 3) Extreme low diversity sample removal (>99.9% of reads in one ASV). 4) Sample removal due to replicate dissimilarity distance from centroid above threshold.'
+   - final-filtered:
+      default: 'TBD check - In addition to the screening in screen_contam_method and screen_nontarget_method: 1) Remove positive and negative control samples. 2) Extreme low read depth sample removal. 3) Extreme low diversity sample removal (>99.9% of reads in one ASV). 4) Sample removal due to replicate dissimilarity distance from centroid above threshold. 5) Removal of singleton ASVs. 6) Removal of ASVs found in only one sample (no pattern of presence). Optional: 7) Remove n-ton ASVs (ASVs w/ less than n reads). 8) Low diversity sample removal. 9) Removal of unknown ASVs. 10) Low read depth sample removal.'
 otu_raw_description: 'No filtering outside of DADA2 default ASV denoising'
 otu_final_description: this_DOI (link to decontamination screening section)
 bioinfo_method_additional: this_DOI (paste link when published)
 
 # NOAA PMEL Ocean Molecular Ecology terms
-asv_method:
+asv_method: 
+   default: dada2pe
+   options: dada2pe | dada2se
+   source_file: REVAMP_config
+   source_term: asv_method
 discard_untrimmed: 1
-qiime2_version: not applicable
-tourmaline_asv_method: not applicable
 dada2_trunc_len_f: not applicable
 dada2pe_trunc_len_r: not applicable
-dada2_trim_left_f: {dada_trimLeft}
-dada2pe_trim_left_r: {dada_trimLeft}
-dada2_trim_right_f: {dada_trimRight}
-dada2pe_trim_right_r: {dada_trimRight}
-dada2_max_ee_f: {dada_maxEE1}
-dada2pe_max_ee_r: {dada_maxEE2}
-dada2_trunc_q: {dada_trunQ}
+dada2_trim_left_f: 
+   default: 0
+   source_file: REVAMP_config
+   source_term: dada_trimLeft
+dada2pe_trim_left_r:
+   source_file: REVAMP_config
+   source_term: dada_trimLeft
+dada2_trim_right_f: 
+   source_file: REVAMP_config
+   source_term: dada_trimRight
+dada2pe_trim_right_r:
+   source_file: REVAMP_config
+   source_term: dada_trimRight
+dada2_max_ee_f:
+   source_file: REVAMP_config
+   source_term: dada_maxEE1
+dada2pe_max_ee_r:
+   source_file: REVAMP_config
+   source_term: dada_maxEE2
+dada2_trunc_q:
+   source_file: REVAMP_config
+   source_term: dada_trunQ
 dada2_pooling_method: pseudo
 dada2_chimera_method: 'removeBimeraDenovo, consensus'
 dada2_min_fold_parent_over_abundance: not applicable
-dada2_n_reads_learn: 2016000000
-repseqs_min_abundance: not applicable
-repseqs_min_length: not applicable
-repseqs_max_length: not applicable
-repseqs_min_prevalence: not applicable
-min_consensus: not applicable
-blca_confidence: not applicable
-
+dada2_n_reads_learn:
+   default: 1.008e11
+   calculation: '{systemmemoryMB}*0.7*450000'
+   source_file: REVAMP_config
+   source_term: systemmemoryMB
+   
 ---
 
 # NOAA PMEL OME Bioinformatics Metabarcoding Protocol
