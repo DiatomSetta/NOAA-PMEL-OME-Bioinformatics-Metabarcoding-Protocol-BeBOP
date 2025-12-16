@@ -130,7 +130,7 @@ tax_class_collapse:
       source_file: REVAMP_config
       source_term: taxonomyConfidenceCutoffs
    - SILVAngs:
-      default: 'No taxonomic levels are dropped from best blast hit matches due to high quality comprehensive nature of the reference dataset and taxonomy.'
+      default: 'No taxonomic levels are dropped from best BLAST hit matches due to high quality comprehensive nature of the reference dataset and taxonomy.'
    - scikit-learn-silva:
       default: TBD check - 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
    - Anacapa:
@@ -310,7 +310,7 @@ At a bare minimum, REVAMP requires as input:
  * [pipeline configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#pipeline-configuration-file--p) with the following controlled vocabulary:
       * `primerF`: IUPAC nucleotide code for forward primer
       * `primerR`: IUPAC nucleotide code for reverse primer
-      * `blastQueryCovCutoff`: Query coverage cutoff for blastn. Recommended: 90.
+      * `blastQueryCovCutoff`: Query coverage cutoff for BLASTn. Recommended: 90.
       * `systemmemoryMB`: System memory limit in megabytes.
       * `locationNTdatabase`: Path to the folder containing the prepared nt database. See next section.
       * `taxonomyCutoffs`: Percent identity confidence cut offs for assigning taxonomy to different taxonomic levels, from species to phylum.
@@ -323,19 +323,28 @@ At a bare minimum, REVAMP requires as input:
       * `dada_maxEE2`: Maximum number of expected errors in reverse read.
       * `dada_trimRight`: Number of bp to trim from the right of the reads. Highly variable and based on sequencing run quality. Check FastQC results.
       * `dada_trimLeft`: Number of bp to trim from the left of the reads. Usually unnecessary (i.e. 0), but check FastQC results.
-      * `blastMode`: Either `allIN`, `mostEnvOUT`, or `allEnvOUT`, refering to entries in the nt database that are kepth or discarded when labelled with controlled unknown/unclassified vocabulary (see (ncbi_db_cleanup.sh)[https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh]). Recommended: `mostEnvOUT`.
- * [figure configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#figure-configuration-file--f)
+      * `blastMode`: Either `allIN`, `mostEnvOUT`, or `allEnvOUT`, refering to entries in the nt database that are kepth or discarded when labelled with controlled unknown/unclassified vocabulary (see [ncbi_db_cleanup.sh](https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh)). Recommended: `mostEnvOUT`.
+ * [figure configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#figure-configuration-file--f):
+    * See REVAMP readme. Pertinant to bioinformatic processing.
 
+REVAMP uses BLASTn against NCBI's nt database for taxonomic assignment. To run BLASTn, the nt database must be downloaded and prepared for use with REVAMP. This can be done using the shell script [ncbi_db_cleanup.sh](https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh) or by running each individual step from the script in the command terminal. Since the nt database is not version controlled, it is imperitive that the date of download is recorded to know the compatibility and relationship of different BLASTn runs. OME uses the same nt database download for the BLASTn for all markers on at least the same run.
 
+#### Running REVAMP
 
+Instructions for running REVAMP are included in the REVAMP [readme](https://github.com/McAllister-NOAA/REVAMP/blob/main/README.md).
 
+OME runs REVAMP on all sequencing runs using the following command:
 
+```
+revamp.sh -p config.txt -f figure_config_file.txt -s sample_metadata.txt -r reads_dirs/marker -o marker_REVAMP -t 40 -y -g
+```
+Note that `-y` skips all intermediate prompts (choosing to automatically fill gaps in the taxonkit output between known levels). `-g` skips figure generation.
 
+The purpose of REVAMP at the front of this workflow is to provide both a common set of ASVs for downstream analysis and to have the ability to apply at least one taxonomic method across all markers. Files used for downstream analysis include: ASV fasta file, ASV count table, ASV taxonomy assignment.
 
+#### REVAMP Troubleshooting
 
-
-
-
+When a sample is completely filtered out (zero remaining reads) at the Cutadapt, DADA2 part 1 (trim and filter), or DADA2 part 2 (learning error, dereplication, merge, ASV generation) steps (see the `run.log` for stats on each step), then REVAMP will fail ungracefully on subsequent steps. The best solution is to remove the offending sample from the run entirely (remove from raw_read folder and sample_metadata file) and start the pipeline again from scratch.
 
 ### Taxonomic Classification
 
