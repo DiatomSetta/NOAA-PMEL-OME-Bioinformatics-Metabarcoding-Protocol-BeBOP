@@ -1,62 +1,161 @@
----
 # MIOP terms
 methodology category: Omics Analysis
 project: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group protocols
-purpose: 
-analyses: 
-geographic location: North East Pacific Ocean [GAZ:00013765], Bering Sea [GAZ:00008990], Arctic Ocean [GAZ:00000323]
-broad-scale environmental context: marine biome [ENVO:00000447], marine photic zone [ENVO:00000209]
-local environmental context: oceanic epipelagic zone biome [ENVO:01000035], marine biome [ENVO:00000447], marine benthic biome [ENVO:01000024]
-environmental medium: sea water [ENVO:00002149]
-target: 
+purpose: 'taxonomic diversity assessment by targeted gene survey [OBI:0001960]'
+analyses: 'bioinformatics analysis [MIOP:0000004] | amplicon sequencing assay [OBI:0002767]'
+geographic location: 
+   options: 'North East Pacific Ocean [GAZ:00013765] | Bering Sea [GAZ:00008990] | Arctic Ocean [GAZ:00000323]'
+broad-scale environmental context: 'marine biome [ENVO:00000447] | oceanic epipelagic zone biome [ENVO:01000035]'
+local environmental context: 
+   options: 'marine photic zone [ENVO:00000209] | marine aphotic zone [ENVO:00000210] | marine benthic biome [ENVO:01000024]'
+environmental medium: 'ocean water [ENVO:00002149] | sea water [ENVO:00002149]'
+target: 'Bacteria-16S-V4V5-Parada [ODE]'
 creator: Samantha Setta, Sean McAllister, Zachary Gold
-materials required: 
-skills required: 
-time required: 
+materials required: high-performance computing resources
+skills required: basic bash, R
+time required: variable
 personnel required: 1
 language: en
-issued: 
+issued: TBD
 audience: scientists
-publisher: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group; University of Washington Cooperative Institute for Climate, Ocean, & Ecosystem Studies
+publisher: 'NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group | University of Washington Cooperative Institute for Climate, Ocean, & Ecosystem Studies'
 hasVersion: 1
-license: CC0 1.0 Universal
-maturity level: mature
+license: 'CC0 1.0 Universal'
+maturity level: demonstrated
 
 # FAIRe terms
-sop_bioinformatics: this_DOI (paste link when published)
+sop_bioinformatics: TBD_this_DOI (paste link when published)
+checkls_ver: TBD_bioinformatics_template
+assay_name: 'ssu16sv4v5_parada | ssu16sv4v5_parada_OSUmod'
+pcr_primer_forward: GTGYCAGCMGCCGCGGTAA
+pcr_primer_reverse: CCGYCAATTYMTTTRAGTTT
 trim_method: 'Cutadapt, primer trimming | DADA2, filterAndTrim (quality and length trimming)'
-trim_param: 'Cutadapt, -a "{primerF};required...{revcomp_primerR};optional", -A "{primerR};required...{revcomp_primerF};optional", --discard-untrimmed, -m 1 | DADA2, trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}'
+trim_param:
+   - Cutadapt:
+      default: '-a "{primerF};required...{revcomp_primerR};optional", -A "{primerR};required...{revcomp_primerF};optional", --discard-untrimmed, -m 1'
+      source_file: REVAMP_config
+      source_term: 'primerF | revcomp_primerR | primerR | revcomp_primerF'
+   - DADA2:
+      default: 'trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}'
+      source_file: REVAMP_config
+      source_term: 'dada_trunQ | dada_trimRight | dada_trimLeft'
 merge_tool: 'DADA2, mergePairs'
 merge_min_overlap: 20
-min_len_cutoff: {dada_minlength}
+min_len_cutoff:
+   default: 100
+   source_file: REVAMP_config
+   source_term: dada_minlength
 min_len_tool: DADA2
 error_rate_tool: DADA2
 error_rate_type: expected error rate
-error_rate_cutoff: '{dada_maxEE1} | {dada_maxEE2}'
+error_rate_cutoff:
+   default: 2
+   source_file: REVAMP_config
+   source_term: 'dada_maxEE1 | dada_maxEE2'
 chimera_check_method: 'DADA2, removeBimeraDenovo, consensus'
 chimera_check_param: not applicable
 otu_clust_tool: 'DADA2, pool="pseudo"'
 otu_clust_cutoff: 100
-min_reads_cutoff: 2 (unless modified by decontamination protocol TBD)
+min_reads_cutoff: 
+   default: 2
+   options: 'raw = 1 | quality-filtered = 1 | final-filtered >= 2'
+   source_file: decontam_workflow_config
+   source_term: TBD (n_ton_removal)
 min_reads_cutoff_unit: reads
-min_reads_tool: DADA2
-otu_db: 'Varies with taxonomic classification tool (see below)'
-otu_db_custom: 'Varies with taxonomic classification tool (see below)'
-tax_assign_cat: 'Varies with taxonomic classification tool (see below)'
-otu_seq_comp_appr: 'Varies with taxonomic classification tool (see below)'
-tax_class_id_cutoff: 'Varies with taxonomic classification tool (see below)'
-tax_class_query_cutoff: 'Varies with taxonomic classification tool (see below)'
-tax_class_collapse: 'Varies with taxonomic classification tool (see below)'
-tax_class_other: 'Varies with taxonomic classification tool (see below)'
-screen_contam_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
+min_reads_tool: 'DADA2 | decontam_workflow'
+otu_db:
+   - REVAMP:
+      default: NCBI GenBank nt database, downloaded {nt_database_version}'
+      source_file: REVAMP_config
+      source_term: nt_database_version
+   - SILVAngs:
+      default: 'non-redundant SILVA SSU ref dataset, release {silva_db_release}'
+      source_file: REVAMP_config
+      source_term: silva_db_release
+   - scikit-learn-silva:
+      default: 'TBD'
+      source_file: TBD
+      source_term: TBD
+   - Anacapa:
+      default: 'rCRUX db {TBD}'
+      source_file: TBD
+      source_term: TBD
+otu_db_custom: not applicable
+tax_assign_cat:
+   - REVAMP:
+      default: sequence similarity
+   - SILVAngs:
+      default: sequence similarity
+   - scikit-learn-silva:
+      default: probabilistic
+   - Anacapa:
+      default: probabilistic
+otu_seq_comp_appr:
+   - REVAMP:
+      default: blastn >2.14.1+
+   - SILVAngs:
+      default: blastn 2.11.0+
+   - scikit-learn-silva:
+      default: k-mer based
+   - Anacapa:
+      default: Bowtie 2
+tax_class_id_cutoff:
+   - REVAMP:
+      default: 60
+      options: "species = 97 | genus = 95 | family = 90 | order = 80 | class = 70 | phylum = 60'
+      source_file: REVAMP_config
+      source_term: taxonomyConfidenceCutoffs
+   - SILVAngs:
+      default: 86
+   - scikit-learn-silva:
+      default: not applicable
+   - Anacapa:
+      default: 40
+      options: "species = 95 | genus = 90 | family = 80 | order = 70 | class = 60 | phylum = 50 | any = 40'
+tax_class_query_cutoff:
+   - REVAMP:
+      default: 90
+      source_file: REVAMP_config
+      source_term: blastQueryCovCutoff
+   - SILVAngs:
+      default: 86
+   - scikit-learn-silva:
+      default: not applicable
+   - Anacapa:
+      default: 80
+tax_class_collapse:
+   - REVAMP:
+      default: 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % identity thresholds ({taxonomyConfidenceCutoffs}, see REVAMP readme).'
+      source_file: REVAMP_config
+      source_term: taxonomyConfidenceCutoffs
+   - SILVAngs:
+      default: 'No taxonomic levels are dropped from best blast hit matches due to high quality comprehensive nature of the reference dataset and taxonomy.'
+   - scikit-learn-silva:
+      default: TBD check - 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
+   - Anacapa:
+      default: 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
+tax_class_other: not applicable
 screen_geograph_method: not applicable
+screen_contam_0_1:
+   - raw:
+      default: 0
+   - quality-filtered
+      default: 1
+   - final-filtered
+      default: 1
+screen_contam_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
+
+
+
+
 screen_nontarget_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
 screen_other: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
 otu_raw_description: 'No filtering outside of DADA2 default ASV denoising'
 otu_final_description: this_DOI (link to decontamination screening section)
 bioinfo_method_additional: this_DOI (paste link when published)
 
-# NOAA FAIRe terms
+# NOAA PMEL Ocean Molecular Ecology terms
+asv_method
 discard_untrimmed: 1
 qiime2_version: not applicable
 tourmaline_asv_method: not applicable
@@ -73,19 +172,11 @@ dada2_pooling_method: pseudo
 dada2_chimera_method: 'removeBimeraDenovo, consensus'
 dada2_min_fold_parent_over_abundance: not applicable
 dada2_n_reads_learn: 2016000000
-deblur_trim_length: not applicable
-deblur_mean_error: not applicable
-deblur_indel_prob: not applicable
-deblur_indel_max: not applicable
-deblur_min_reads: not applicable
-deblur_min_size: not applicable
 repseqs_min_abundance: not applicable
 repseqs_min_length: not applicable
 repseqs_max_length: not applicable
 repseqs_min_prevalence: not applicable
-skl_confidence: not applicable
 min_consensus: not applicable
-tourmaline_classify_method: not applicable
 blca_confidence: not applicable
 
 ---
