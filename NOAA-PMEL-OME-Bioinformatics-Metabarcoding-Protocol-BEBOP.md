@@ -323,9 +323,9 @@ At a bare minimum, REVAMP requires as input:
       * `dada_trimLeft`: Number of bp to trim from the left of the reads. Usually unnecessary (i.e. 0), but check FastQC results.
       * `blastMode`: Either `allIN`, `mostEnvOUT`, or `allEnvOUT`, refering to entries in the nt database that are kepth or discarded when labelled with controlled unknown/unclassified vocabulary (see [ncbi_db_cleanup.sh](https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh)). Recommended: `mostEnvOUT`.
  * [figure configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#figure-configuration-file--f):
-    * See REVAMP readme. Pertinant to bioinformatic processing.
+    * See REVAMP readme. Not pertinant to bioinformatic processing.
 
-REVAMP uses BLASTn against NCBI's nt database for taxonomic assignment. To run BLASTn, the nt database must be downloaded and prepared for use with REVAMP. This can be done using the shell script [ncbi_db_cleanup.sh](https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh) or by running each individual step from the script in the command terminal. Since the nt database is not version controlled, it is imperitive that the date of download is recorded to know the compatibility and relationship of different BLASTn runs. OME uses the same nt database download for the BLASTn for all markers on at least the same run.
+REVAMP uses BLASTn against NCBI's nt database for taxonomic assignment. To run BLASTn, the nt database must be downloaded and prepared for use with REVAMP. This can be done using the shell script [ncbi_db_cleanup.sh](https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh) or by running each individual step from the script in the command terminal. Since the nt database is not version controlled, it is imperitive that the date of download is recorded to know the compatibility and relationship of different BLASTn runs. OME uses the same nt database download for the BLASTn for all markers on at least the same sequencing run.
 
 #### Running REVAMP
 
@@ -345,6 +345,36 @@ The purpose of REVAMP at the front of this workflow is to provide both a common 
 When a sample is completely filtered out (zero remaining reads) at the Cutadapt, DADA2 part 1 (trim and filter), or DADA2 part 2 (learning error, dereplication, merge, ASV generation) steps (see the `run.log` for stats on each step), then REVAMP will fail ungracefully on subsequent steps. The best solution is to remove the offending sample from the run entirely (remove from raw_read folder and sample_metadata file) and start the pipeline again from scratch.
 
 ### Taxonomic Classification
+
+#### `REVAMP`
+
+Modified from the REVAMP [workflow](https://github.com/McAllister-NOAA/REVAMP/tree/main?tab=readme-ov-file#revamp-workflow): 
+* ASVs are blasted against the NCBI `nt` database (BLASTn; `subject_besthit`; `max_target_seqs 4000`) ([Camacho et al., 2009](https://doi.org/10.1186/1471-2105-10-421)), exporting percent identity, length of hit, subject taxonomy IDs (taxIDs), and subject accession in tab-delimited format.
+* After the tab-delimited BLAST output file is created, the file is then reformatted to simplify the results to only include taxIDs from all best percent identity matches longer than a user-supplied query coverage cutoff (90% by length, in this case). Taxonomy assignment with REVAMP is intentionally conservative given: 1) the reference databases are incomplete for some taxa and heavily sampled for others, and 2) markers vary in their ability to resolve different taxa to species (e.g. [Gold et al., 2021](https://doi.org/10.1111/1755-0998.13450)).
+* Before assessing taxonomies, TaxonKit (v 0.5.0) ([Shen and Ren, 2021](https://doi.org/10.1016/j.jgg.2021.03.006)) is run on all discovered taxIDs in the reformatted BLASTn file, with the results reformatted to include kingdom, phylum, class, order, family, genus, and species (`K/P/C/O/F/G/S`) assignments only.
+* In cases where an intermediate taxon is missing in this string, REVAMP will automatically fill from a lower taxonomy assignment: for example, a `K/P/-/O/F/G/S` string would be replaced with `K/P/O__c/O/F/G/S` to indicate that the class of interest contains the order below it.
+* In REVAMP, taxonomy is then assigned by merging the taxonomic hierarchy of all best BLASTn taxID hits to the lowest common ancestor (i.e. deepest identical taxonomic assignment). This means, for example, that if the best BLASTn hits match several species from the same genus, the ASV will only be identified to the genus level.
+* The only other factor influencing the assignment is the confidence of the taxonomic depth as determined by percent identity cutoffs for each taxonomic level. While different clades vary widely in this respect ([Gebhardt and Knebelsberger, 2015](https://doi.org/10.1007/s10152-015-0434-7); [Zhang and Bu, 2022](https://doi.org/10.3390/insects13050425)), users can choose a set of taxonomic cutoffs per marker gene. For this marker, we use the recommended confidence cut offs for rRNA genes (97,95,90,80,70,60), which means that an ASV with best blast hit percent identity ≥97% can be assigned to the species level, 97%>x≥95% to genus, 95%>x≥90% to family, 90%>x≥80% to order, 80%>x≥70% to class, 70%>x≥60% to phylum, and <60% is assigned to unknown. Note that this confidence-based taxonomic trimming is completed after the last common ancestor analysis trimming.
+* Summary:
+   * BLAST-based best percent identity hit (over 90% query coverage by length)
+   * Lowest common ancestor of all best hits
+   * Confidence thresholds set the possible depth of assignment based on percent identity quality of the hit
+   * Taxonomic assignments are based on NCBI taxonomic hierarchy, simplified to seven levels only (`K/P/C/O/F/G/S`)
+   * Results will change depending on the contents of the NCBI `nt` database, which is why the date of download should be noted
+
+#### `SILVAngs`
+
+
+
+
+#### `scikit-learn-silva`
+
+#### `Anacapa`
+
+
+
+
+
 
 Taxonomic classification occurs after ASV assignment and varies by metabarcoding marker region. 
 
