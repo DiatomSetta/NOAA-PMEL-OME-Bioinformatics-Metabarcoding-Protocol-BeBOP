@@ -140,9 +140,9 @@ screen_geograph_method: not applicable
 screen_contam_0_1:
    - raw:
       default: 0
-   - quality-filtered
+   - quality-filtered:
       default: 1
-   - final-filtered
+   - final-filtered:
       default: 1
 screen_contam_method: 'Applicable to GBIF/OBIS submission. Not applicable to NODE submission. See below'
 
