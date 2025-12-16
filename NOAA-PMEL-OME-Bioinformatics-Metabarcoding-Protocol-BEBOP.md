@@ -301,7 +301,15 @@ To check the quality of the sequencing run, [FastQC](https://www.bioinformatics.
 
 [REVAMP](https://github.com/McAllister-NOAA/REVAMP) ([McAllister et al., 2023](https://doi.org/10.5670/oceanog.2023.231)) is a published metabarcoding pipeline that integrates several tools for read processing, amplicon sequence variant (ASV) assignment, taxonomic assignment, and basic data visualization. The front end of REVAMP, including read trimming and ASV assignment, is used for all markers to produce a consistent set of ASVs to work from for downstream analysis. Taxonomic assignment in REVAMP is also used for downstream analysis on all markers, though some have additional alternative taxonomic classification methods (detailed below).
 
+#### Stage and prepare data
 
+Usually, data comes from the sequencing facility with facility sample tags and sequencing lane tag information that is cumbersome for downstream processing. OME sorts our data for each sequencing run into marker specific folders, and renames to OME eDNA sample numbers (E numbers) for use in the REVAMP workflow and downstream metadata merging and analysis.
+
+At a bare minimum, REVAMP requires as input:
+ * [sample metadata file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#sample-metadata-file--s) with a `Sample` header, though it is useful for downstream figure generation to provide other information from controlled vocabulary (i.e. `controls`, `sites`, `replicates`, `lat`, `long`, `group1`, `group2`) or free text "chemistry" entries.
+ * [pipeline configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#pipeline-configuration-file--p) with the following controlled vocabulary:
+      * 
+ * [figure configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#figure-configuration-file--f)
 
 
 
