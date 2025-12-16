@@ -103,7 +103,7 @@ otu_seq_comp_appr:
 tax_class_id_cutoff:
    - REVAMP:
       default: 60
-      options: "species = 97 | genus = 95 | family = 90 | order = 80 | class = 70 | phylum = 60'
+      options: 'species = 97 | genus = 95 | family = 90 | order = 80 | class = 70 | phylum = 60'
       source_file: REVAMP_config
       source_term: taxonomyConfidenceCutoffs
    - SILVAngs:
@@ -112,7 +112,7 @@ tax_class_id_cutoff:
       default: not applicable
    - Anacapa:
       default: 40
-      options: "species = 95 | genus = 90 | family = 80 | order = 70 | class = 60 | phylum = 50 | any = 40'
+      options: 'species = 95 | genus = 90 | family = 80 | order = 70 | class = 60 | phylum = 50 | any = 40'
 tax_class_query_cutoff:
    - REVAMP:
       default: 90
