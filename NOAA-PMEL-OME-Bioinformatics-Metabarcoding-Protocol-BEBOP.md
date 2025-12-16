@@ -308,7 +308,22 @@ Usually, data comes from the sequencing facility with facility sample tags and s
 At a bare minimum, REVAMP requires as input:
  * [sample metadata file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#sample-metadata-file--s) with a `Sample` header, though it is useful for downstream figure generation to provide other information from controlled vocabulary (i.e. `controls`, `sites`, `replicates`, `lat`, `long`, `group1`, `group2`) or free text "chemistry" entries.
  * [pipeline configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#pipeline-configuration-file--p) with the following controlled vocabulary:
-      * 
+      * `primerF`: IUPAC nucleotide code for forward primer
+      * `primerR`: IUPAC nucleotide code for reverse primer
+      * `blastQueryCovCutoff`: Query coverage cutoff for blastn. Recommended: 90.
+      * `systemmemoryMB`: System memory limit in megabytes.
+      * `locationNTdatabase`: Path to the folder containing the prepared nt database. See next section.
+      * `taxonomyCutoffs`: Percent identity confidence cut offs for assigning taxonomy to different taxonomic levels, from species to phylum.
+         * Recommended for ribosomal RNA genes: 97,95,90,80,70,60
+         * Recommended for protein encoding genes: 95,92,87,77,67,60
+      * `dada_minlength`: Minimum post-trimming length passing DADA2.
+      * `dada_phix`: Whether an internal PhiX sequencing control is present in the data (TRUE/FALSE).
+      * `dada_trunQ`: Setting for quality score trimming of reads.
+      * `dada_maxEE1`: Maximum number of expected errors in forward read.
+      * `dada_maxEE2`: Maximum number of expected errors in reverse read.
+      * `dada_trimRight`: Number of bp to trim from the right of the reads. Highly variable and based on sequencing run quality. Check FastQC results.
+      * `dada_trimLeft`: Number of bp to trim from the left of the reads. Usually unnecessary (i.e. 0), but check FastQC results.
+      * `blastMode`: Either `allIN`, `mostEnvOUT`, or `allEnvOUT`, refering to entries in the nt database that are kepth or discarded when labelled with controlled unknown/unclassified vocabulary (see (ncbi_db_cleanup.sh)[https://github.com/McAllister-NOAA/REVAMP/blob/main/ncbi_db_cleanup.sh]). Recommended: `mostEnvOUT`.
  * [figure configuration file](https://github.com/McAllister-NOAA/REVAMP?tab=readme-ov-file#figure-configuration-file--f)
 
 
