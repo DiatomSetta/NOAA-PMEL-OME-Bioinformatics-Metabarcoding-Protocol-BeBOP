@@ -1,4 +1,3 @@
----
 # MIOP terms
 methodology category: Omics Analysis
 project: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group protocols
