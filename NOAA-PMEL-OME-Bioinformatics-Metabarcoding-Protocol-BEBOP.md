@@ -188,7 +188,7 @@ dada2_pooling_method: pseudo
 dada2_chimera_method: 'removeBimeraDenovo, consensus'
 dada2_min_fold_parent_over_abundance: not applicable
 dada2_n_reads_learn:
-   default: 1.008e11
+   default: 1e11
    calculation: '{systemmemoryMB}*0.7*450000'
    source_file: REVAMP_config
    source_term: systemmemoryMB
@@ -348,6 +348,8 @@ When a sample is completely filtered out (zero remaining reads) at the Cutadapt,
 
 #### `REVAMP`
 
+Citation for the Rapid Exploration and Visualization through an Automated Metabarcoding Pipeline (REVAMP) tool: [https://doi.org/10.5670/oceanog.2023.231](https://doi.org/10.5670/oceanog.2023.231).
+
 Modified from the REVAMP [workflow](https://github.com/McAllister-NOAA/REVAMP/tree/main?tab=readme-ov-file#revamp-workflow): 
 * ASVs are blasted against the NCBI `nt` database (BLASTn; `subject_besthit`; `max_target_seqs 4000`) ([Camacho et al., 2009](https://doi.org/10.1186/1471-2105-10-421)), exporting percent identity, length of hit, subject taxonomy IDs (taxIDs), and subject accession in tab-delimited format.
 * After the tab-delimited BLAST output file is created, the file is then reformatted to simplify the results to only include taxIDs from all best percent identity matches longer than a user-supplied query coverage cutoff (90% by length, in this case). Taxonomy assignment with REVAMP is intentionally conservative given: 1) the reference databases are incomplete for some taxa and heavily sampled for others, and 2) markers vary in their ability to resolve different taxa to species (e.g. [Gold et al., 2021](https://doi.org/10.1111/1755-0998.13450)).
@@ -359,12 +361,21 @@ Modified from the REVAMP [workflow](https://github.com/McAllister-NOAA/REVAMP/tr
    * BLAST-based best percent identity hit (over 90% query coverage by length)
    * Lowest common ancestor of all best hits
    * Confidence thresholds set the possible depth of assignment based on percent identity quality of the hit
-   * Taxonomic assignments are based on NCBI taxonomic hierarchy, simplified to seven levels only (`K/P/C/O/F/G/S`)
+   * Taxonomic assignments are based on the NCBI taxonomic hierarchy, simplified to seven levels only (`K/P/C/O/F/G/S`)
    * Results will change depending on the contents of the NCBI `nt` database, which is why the date of download should be noted
 
 #### `SILVAngs`
 
+Citation for the SILVAngs tool: [https://doi.org/10.1016/j.jbiotec.2017.06.1198](https://doi.org/10.1016/j.jbiotec.2017.06.1198). The tool is a web-based service found [here](https://ngs.arb-silva.de/silvangs/). Detailed description of the data processing pipeline is described in the [User Manual](https://www.arb-silva.de/fileadmin/silva_databases/sngs/SILVAngs_User_Guide.pdf). The [arb-silva](https://www.arb-silva.de/) team is well-known and trusted in the realm of microbial taxonomic classification and reference database management, having maintained a database of ribosomal RNA genes for more than 30 years. 
 
+
+
+
+
+
+
+A brief summary of the SILVAngs pipeline and OME use of it:
+* 
 
 
 #### `scikit-learn-silva`
