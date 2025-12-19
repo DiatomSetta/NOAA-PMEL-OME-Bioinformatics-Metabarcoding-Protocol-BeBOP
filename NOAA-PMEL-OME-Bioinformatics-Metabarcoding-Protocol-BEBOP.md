@@ -77,10 +77,6 @@ otu_db:
       default: 'TBD'
       source_file: TBD
       source_term: TBD
-   - Anacapa:
-      default: 'rCRUX db version {TBD}'
-      source_file: TBD
-      source_term: TBD
 otu_db_custom: not applicable
 tax_assign_cat:
    - REVAMP:
@@ -89,8 +85,6 @@ tax_assign_cat:
       default: sequence similarity
    - scikit-learn-silva:
       default: probabilistic
-   - Anacapa:
-      default: probabilistic
 otu_seq_comp_appr:
    - REVAMP:
       default: blastn >2.14.1+
@@ -98,8 +92,6 @@ otu_seq_comp_appr:
       default: blastn 2.11.0+
    - scikit-learn-silva:
       default: 'no alignment, k-mer based'
-   - Anacapa:
-      default: Bowtie 2
 tax_class_id_cutoff:
    - REVAMP:
       default: 60
@@ -110,9 +102,6 @@ tax_class_id_cutoff:
       default: 86
    - scikit-learn-silva:
       default: not applicable
-   - Anacapa:
-      default: 40
-      options: 'species = 95 | genus = 90 | family = 80 | order = 70 | class = 60 | phylum = 50 | any = 40'
 tax_class_query_cutoff:
    - REVAMP:
       default: 90
@@ -122,8 +111,6 @@ tax_class_query_cutoff:
       default: 86
    - scikit-learn-silva:
       default: not applicable
-   - Anacapa:
-      default: 80
 tax_class_collapse:
    - REVAMP:
       default: 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % identity thresholds ({taxonomyConfidenceCutoffs}, see REVAMP readme).'
@@ -133,8 +120,6 @@ tax_class_collapse:
       default: 'No taxonomic levels are dropped from best BLAST hit matches due to high quality comprehensive nature of the reference dataset and taxonomy.'
    - scikit-learn-silva:
       default: TBD check - 'Starting at the highest level, the software checks % confidence against a set threshold. Once the confidence drops below that threshold, everything beyond that level is unassigned.'
-   - Anacapa:
-      default: TBD check - 'Taxonomic levels were dropped to the lowest common ancestor (LCA), and were further dropped depending on % confidence thresholds.'
 tax_class_other: not applicable
 screen_geograph_method: not applicable
 screen_contam_0_1:
@@ -420,14 +405,6 @@ qiime feature-classifier fit-classifier-naive-bayes
 ```
 qiime tools export
 ```
-
-
-
-#### `Anacapa`
-
-TBD
-
-
 
 ### Data Decontamination and Quality Assurance Processing Workflow
 ![Sequencing-data-decontamination-and-quality-assurance (1)](https://github.com/user-attachments/assets/7a46aa0d-1247-4550-b19a-0989b80c4af4)
