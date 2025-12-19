@@ -1,4 +1,4 @@
-# NOAA-PMEL-OME-Bioinformatics-Metabarcoding-Protocol-BeBOP
+# NOAA-PMEL-OME-Bioinformatics-Metabarcoding-Protocol-ssu16sv4v5_parada-BeBOP
 See [NOAA-PMEL-OME-Bioinformatics-Metabarcoding-Protocol-BEBOP.md](https://github.com/DiatomSetta/NOAA-PMEL-OME-Bioinformatics-Metabarcoding-Protocol-BeBOP/blob/main/NOAA-PMEL-OME-Bioinformatics-Metabarcoding-Protocol-BEBOP.md) for detailed protocol.  
 This is verion 0.0 and is draft document that has not been finalized or version controlled.
 
