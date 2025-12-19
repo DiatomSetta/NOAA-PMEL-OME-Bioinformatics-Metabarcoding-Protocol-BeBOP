@@ -10,7 +10,7 @@ broad-scale environmental context: 'marine biome [ENVO:00000447] | oceanic epipe
 local environmental context: 
    options: 'marine photic zone [ENVO:00000209] | marine aphotic zone [ENVO:00000210] | marine benthic biome [ENVO:01000024]'
 environmental medium: 'ocean water [ENVO:00002149] | sea water [ENVO:00002149]'
-target: 'Bacteria-16S-V4V5-Parada [ODE]'
+target: 'Universal-16S-V4V5-Parada [ODE]'
 creator: Samantha Setta, Sean McAllister, Zachary Gold
 materials required: high-performance computing resources
 skills required: basic bash, R
@@ -38,6 +38,8 @@ trim_param:
       default: 'trunQ = {dada_trunQ}, trimRight = {dada_trimRight}, trimLeft = {dada_trimLeft}'
       source_file: REVAMP_config
       source_term: 'dada_trunQ | dada_trimRight | dada_trimLeft'
+demux_tool: 'pheniqs v2.1.0 | Cutadapt v3.4'
+demux_max_mismatch: '0 | 0.3'
 merge_tool: 'DADA2, mergePairs'
 merge_min_overlap: 20
 min_len_cutoff:
@@ -57,7 +59,7 @@ otu_clust_tool: 'DADA2, pool="pseudo"'
 otu_clust_cutoff: 100
 min_reads_cutoff: 
    default: 2
-   options: 'raw = 1 | quality-filtered = 1 | final-filtered >= 2'
+   options: 'unfiltered = 1 | filtered-trusted = 1 | filtered-analytic >= 2'
    source_file: decontam_workflow_config
    source_term: TBD (n_ton_removal)
 min_reads_cutoff_unit: reads
@@ -136,18 +138,18 @@ tax_class_collapse:
 tax_class_other: not applicable
 screen_geograph_method: not applicable
 screen_contam_0_1:
-   - raw:
+   - unfiltered:
       default: 0
-   - quality-filtered:
+   - filtered-trusted:
       default: 1
-   - final-filtered:
+   - filtered-analytic:
       default: 1
 screen_contam_method: 'TBD check - 1) The composition of the positive control is used to estimate a maximum vector contamination, which is then subtracted proportionally from all ASVs in the run to remove background tag jumping. 2) Next negative control contaminants are removed either as a wholesale removal of the impacted ASV, or as a proportional removal. 3) ASVs assigned to common contaminants are removed: human, food products, pets, common lab/consumable contaminants, laboratory controls.'
 screen_nontarget_method: 'TBD check - 1) Contaminanting off-target organisms were removed as described in screen_contam_method, removing common contaminants including human, food products, pets, common lab/consumable contaminants, laboratory controls.'
 screen_other:
-   - quality-filtered:
+   - filtered-trusted:
       default: 'TBD check - In addition to the screening in screen_contam_method and screen_nontarget_method: 1) Remove positive and negative control samples. 2) Extreme low read depth sample removal. 3) Extreme low diversity sample removal (>99.9% of reads in one ASV). 4) Sample removal due to replicate dissimilarity distance from centroid above threshold.'
-   - final-filtered:
+   - filtered-analytic:
       default: 'TBD check - In addition to the screening in screen_contam_method and screen_nontarget_method: 1) Remove positive and negative control samples. 2) Extreme low read depth sample removal. 3) Extreme low diversity sample removal (>99.9% of reads in one ASV). 4) Sample removal due to replicate dissimilarity distance from centroid above threshold. 5) Removal of singleton ASVs. 6) Removal of ASVs found in only one sample (no pattern of presence). Optional: 7) Remove n-ton ASVs (ASVs w/ less than n reads). 8) Low diversity sample removal. 9) Removal of unknown ASVs. 10) Low read depth sample removal. Exact application indicated in manuscript and manuscript code repository.'
 otu_raw_description: 'No filtering outside of DADA2 default ASV denoising'
 otu_final_description: this_DOI (link to decontamination screening section)
@@ -291,7 +293,7 @@ Data is run through this standard operating procedure at the sequencing run leve
 
 ### Raw Data Download and QA/QC
 
-Raw reads (fastq.gz) are provided by the sequencing center demultiplexed by sample and marker (see sequencing center BeBops listed in RELATED PROTOCOLS). On downloading reads to the local compute infrastructure, fidelity of the downloaded file is checked via a `md5sum` check. Md5s are either supplied by the sequencing center with the original download (fastq.gz.md5) or are provided separately.
+Raw reads (fastq.gz) are provided by the sequencing center demultiplexed by sample and marker (see sequencing center BeBops listed in RELATED PROTOCOLS). Demultiplexing is done in two stages, depending on whether or not any sample•marker pair shares the same Illumina index. If all sample•marker pairs have a unique index, then demultiplexing is completed using pheniqs v2.1.0 only, with 0 allowed mismatches. If samples have unique indices, but markers do not, then first samples are separated with pheniqs v2.1.0 (0 mismatch), followed by marker separation using Cutadapt v3.4 (loose 30% allowed mismatch to primer; primer kept for a second more strict matching later in the workflow). On downloading reads to the local compute infrastructure, fidelity of the downloaded file is checked via a `md5sum` check. Md5s are either supplied by the sequencing center with the original download (fastq.gz.md5) or are provided separately.
 
 To check the quality of the sequencing run, [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is run on all fastq files (`~/path/to/FastQC/fastqc -o fastqc -t 10 *gz`). In addition for checking the run for a number of quality statistics, the "Per base sequence quality" is used to determine the best cutoff for the `dada_trimRight` (number of bases to trim from right or end of sequence) and `dada_trimLeft` (number of bases to trim from the left or start of sequence) parameters for the REVAMP configuration file.
 
@@ -366,28 +368,28 @@ Modified from the REVAMP [workflow](https://github.com/McAllister-NOAA/REVAMP/tr
 
 #### `SILVAngs`
 
-Citation for the SILVAngs tool: [https://doi.org/10.1016/j.jbiotec.2017.06.1198](https://doi.org/10.1016/j.jbiotec.2017.06.1198). The tool is a web-based service found [here](https://ngs.arb-silva.de/silvangs/). Detailed description of the data processing pipeline is described in the [User Manual](https://www.arb-silva.de/fileadmin/silva_databases/sngs/SILVAngs_User_Guide.pdf). The [arb-silva](https://www.arb-silva.de/) team is well-known and trusted in the realm of microbial taxonomic classification and reference database management, having maintained a database of ribosomal RNA genes for more than 30 years. 
+Citation for the SILVAngs tool: [https://doi.org/10.1016/j.jbiotec.2017.06.1198](https://doi.org/10.1016/j.jbiotec.2017.06.1198). The tool is a web-based service found [here](https://ngs.arb-silva.de/silvangs/). Detailed description of the data processing pipeline is described in the [User Manual](https://www.arb-silva.de/fileadmin/silva_databases/sngs/SILVAngs_User_Guide.pdf). The [arb-silva](https://www.arb-silva.de/) team is well-known and trusted in the realm of microbial taxonomic classification and reference database management, having maintained a curated database of the small and large subunit ribosomal RNA genes for more than 30 years. The SILVAngs tool allows a user to submit sequences to be automatically classified against the curated SILVA taxonomy backbone to the genus level.
 
+A summary of the SILVAngs pipeline and OME use of it:
+* The `ASVs.fa` amplicon sequence variant output from the REVAMP pipeline is submitted to the SILVAngs platform on a per sequencing run, per marker basis.
+* Default analysis settings are used with the exceptions: `sequence identity` set to `1` (these already represent ASVs, aka 100% operational taxonomic units).
+   * SILVAngs as run on default settings runs BLASTn against the SILVA database (release 138.2), and only assigns reads where the average of the percent identity and alignment coverage are greater than 93%. No common ancestor trimming is done due to the nature of the non-redundant curated database.
+* The project is excecuted by the SILVAngs pipeline and the result archive is downloaded.
+* To create a similar data product to REVAMP, which includes ASV counts in a biom format and ASV taxonomy in a separate file, we then use REVAMP to reformat the SILVAngs output.
+   * Note: Despite setting `sequence identity` set to `1`, there are still rare instances where multiple ASVs can be clustered together by the SILVAngs pipeline. REVAMP will look at the clustering file to copy the taxonomic assignment of the cluster reference to other ASVs in that cluster.
+* The original REVAMP output folder that was used to create the original ASV assignments is copied to a new location. Because of the checkpoint system in REVAMP, we can overwrite the original REVAMP taxonomy of this copied folder with the new SILVAngs taxonomy by:
+   * Deleting all the checkpoint lines in `progress.txt` after `dada2_Finished=TRUE`.
+   * Rerunning REVAMP with the `-e` flag and pointing to the config files internal to the output folder.
+   * E.G. `revamp.sh -p Parada16S_REVAMP_out/config_file.txt -f Parada16S_REVAMP_out/figure_config_file.txt -s Parada16S_REVAMP_out/sample_metadata.txt -r . -o Parada16S_REVAMP_out -t 6 -y -g -e`
+* REVAMP will skip the BLASTn steps and instead prompt the user for the SILVAngs output and SILVA taxonomy files:
+   * `Enter the location of the SILVAngs ssu or lsu results directory (i.e. ~/Downloads/results/ssu)`. This is simply the path to the results archive `ssu` folder.
+   * `Enter the location of the reference taxonomy map for current SILVA database: i.e. tax_slv_ssu_138.1.txt`. This file can be downloaded from arb-silva [here](https://www.arb-silva.de/current-release/Exports/taxonomy).
+* REVAMP will output the necessary ASV count and taxonomy files, based on the SILVA taxonomy hierarchy and simplified to seven levels only (`K/P/C/O/F/G/S`).
 
-
-
-
-
-
-A brief summary of the SILVAngs pipeline and OME use of it:
-* 
-
+##### Troubleshooting
+There is a rare designation in the SILVAngs output that sets the taxonomy assignment to `silva||0|`. This entry does not exist in the silva taxonomy database, and is meant to indicate an unassigned/unknown hit. However, REVAMP cannot yet deal with this issue (user will see perl error `Use of uninitialized value`), and it is necessary to replace `silva||0|` with `Unknown` in the `results/ssu/exports/x---ssu---otus.csv` file.
 
 #### `scikit-learn-silva`
-
-#### `Anacapa`
-
-
-
-
-
-
-Taxonomic classification occurs after ASV assignment and varies by metabarcoding marker region. 
 
 The 18Sv4 rRNA, 18Sv9 rRNA, 16Sv4 rRNA, and ITS1 regions are classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers are trained using the [PR2 database(v5.1.0)](https://pr2-database.org/) (Guillou et al., 2012) for 18Sv4 rRNA and 18Sv9 rRNA, [silva (v138.99)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013), and a [custom curated database](https://zenodo.org/records/15351664) for the ITS1 region. Each database is curated, extracted to the region of interest, and used to train a naive bayesian taxonomic classifier by:
 
@@ -419,6 +421,14 @@ qiime feature-classifier fit-classifier-naive-bayes
 qiime tools export
 ```
 
+
+
+#### `Anacapa`
+
+TBD
+
+
+
 ### Decontamination steps
 
 Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) (Davis et al., 2018) is used to filter out ASVs, with the following steps:
@@ -442,6 +452,12 @@ Remove any ASVs identified as human (*Homo sapiens*), dog (*Canis familiaris*), 
 **5) Remove samples that have one ASV making up 99% of total sequences.**
 
 Remove samples dominated (>99% abundance) by one ASV, suggesting an error with sample processing or sequencing.
+
+
+
+
+### Marker-specific recommendations – ssu16sv4v5_parada / Universal-16S-V4V5-Parada
+
 
 # PERSONNEL REQUIRED
 
