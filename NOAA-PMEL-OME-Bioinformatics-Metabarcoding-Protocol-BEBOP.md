@@ -10,7 +10,7 @@ broad-scale environmental context: 'marine biome [ENVO:00000447] | oceanic epipe
 local environmental context: 
    options: 'marine photic zone [ENVO:00000209] | marine aphotic zone [ENVO:00000210] | marine benthic biome [ENVO:01000024]'
 environmental medium: 'ocean water [ENVO:00002149] | sea water [ENVO:00002149]'
-target: 'Universal-16S-V4V5-Parada [ODE]'
+target: 'Bacterial 16S RNA [NCIT:C105370]'
 creator: Samantha Setta, Sean McAllister, Zachary Gold
 materials required: high-performance computing resources
 skills required: basic bash, R
@@ -410,15 +410,28 @@ qiime tools export
 ### Data Decontamination and Quality Assurance Processing Workflow
 ![Sequencing-data-decontamination-and-quality-assurance (1)](https://github.com/user-attachments/assets/7a46aa0d-1247-4550-b19a-0989b80c4af4)
 
-Unfiltered ASV tables output from any bioinformatics pipeline have the potential for a number of artefacts and issues that should be dealt with before providing those results to the public. OME has chosen to provide ASV tables at three stages of analysis: 1) unfiltered, 2) filtered-trusted, 3) filtered-analytic
+Unfiltered ASV tables output from any bioinformatics pipeline have the potential for a number of artefacts and issues that should be dealt with before providing those results to the public. OME has chosen to provide ASV tables at three stages of analysis: 
+   1) unfiltered - The original ASV table with no additional filtering. Submitted to Ocean DNA Explorer ([ODE](https://www.oceandnaexplorer.org/)).
+   2) filtered-trusted - An ASV table filtered to remove ASVs and samples with clear issues affecting their use in any context. Submitted to [ODE](https://www.oceandnaexplorer.org/) and Ocean Biodiversity Information System ([OBIS](https://obis.org/)).
+   3) filtered-analytic - Starting from the filtered-trusted ASV table, additional filtering is applied for a given more detailed analytic context. Submitted to [ODE](https://www.oceandnaexplorer.org/) and as part of a code repository on GitHub associated with a particular manuscript.
+
+The OME workflow for data decontamination and quality assurance is available [here](https://github.com/DiatomSetta/Sequencing-data-decontamination-and-quality-assurance/tree/main).
+
+**Part 1 – Sequencing Run-Based Filtering**
+
+**Step 1 – Filter read type** 
+By default, REVAMP only produces ASV tables from merged forward and reverse reads. However, some pipelines product multiple datasets from single end and merged reads (e.g. [Anacapa](https://github.com/limey-bean/Anacapa)), and this step allows the user to filter those read types depending on use. Merged reads are more accurate, and OME primarily focuses on that result. However, there are applications of single end ASVs, including 1) instances where amplicons are larger and provide no overlap of the forward and reverse reads. This is the case for Eukaryota with the `ssu16sv4v5_parada` assay for instance. 2) Failed sequencing runs where only one read (forward or reverse) was successful.
+
+**Step 2 – Filter tag-jumping**
+If the sequencing run includes a high-quality positive control, that control can be used to estimate the occurrence of tag-jumping or index hopping. The ASV(s) associated with the positive control sample are first identified, after which the maximum relative proportion of environmental reads jumping into the positive control is calculated as maximum vector contamination. Next that maximum contamination proportion is subtracted from each ASV's total read count.
+
+**Step 3 – Filter negative control contaminants**
+If a sequencing run has negative controls sequenced, those negative controls can be used to remove contaminants. It is important to consider the source of the negative control, so that the filtering can be applied appropriately to samples. For example, OME collects negative controls throughout cruises (field blanks), during extraction (extraction blanks), and during PCR (PCR blanks). Depending on which samples each of these negative controls is associated with, the clearance of contaminating sequences may not apply to all samples on a sequencing run evenly. For those samples that negative controls do apply to, OME filters using two strategies: 1) wholesale removal of the impacted ASV, or 2) proportional removal
 
 
 
-Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) (Davis et al., 2018) is used to filter out ASVs, with the following steps:
 
-**1) Estimation of Tag-jumping or Index Hopping.**
 
-Subtract the proportion of reads that jumped into control samples from each environmental sample. Determine which ASVs came from controls vs environmental samples, create a vector of ASVs in positive controls, calculate what proportion of the reads found in the positive controls are found in environment samples, and subtract the composition of the positive controls from the environment samples.
    
 **2) Discarding samples with low number of reads.**
 
