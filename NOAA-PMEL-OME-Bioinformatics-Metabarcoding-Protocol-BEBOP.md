@@ -384,10 +384,10 @@ A summary of the SILVAngs pipeline and OME use of it:
 * REVAMP will skip the BLASTn steps and instead prompt the user for the SILVAngs output and SILVA taxonomy files:
    * `Enter the location of the SILVAngs ssu or lsu results directory (i.e. ~/Downloads/results/ssu)`. This is simply the path to the results archive `ssu` folder.
    * `Enter the location of the reference taxonomy map for current SILVA database: i.e. tax_slv_ssu_138.1.txt`. This file can be downloaded from arb-silva [here](https://www.arb-silva.de/current-release/Exports/taxonomy).
-* REVAMP will output the necessary ASV count and taxonomy files, based on the SILVA taxonomy hierarchy and simplified to seven levels only (`K/P/C/O/F/G/S`).
+* REVAMP will output the necessary ASV count and taxonomy files, based on the SILVA taxonomy hierarchy and simplified to seven levels only (`K/P/C/O/F/G/S`). Note: All species level assignments in this file are `NA`.
 
 ##### Troubleshooting
-There is a rare designation in the SILVAngs output that sets the taxonomy assignment to `silva||0|`. This entry does not exist in the silva taxonomy database, and is meant to indicate an unassigned/unknown hit. However, REVAMP cannot yet deal with this issue (user will see perl error `Use of uninitialized value`), and it is necessary to replace `silva||0|` with `Unknown` in the `results/ssu/exports/x---ssu---otus.csv` file.
+There is a rare designation in the SILVAngs output that sets the taxonomy assignment to `silva||0|`. This entry does not exist in the silva taxonomy database, and is meant to indicate an unassigned/unknown hit. However, REVAMP cannot yet deal with this issue (user will see perl error `Use of uninitialized value`), and it is necessary to replace `silva||0|` with `Unknown` in the `results/ssu/exports/x---ssu---otus.csv` file. Note that the assignment `ncbi||0|` in the same line should also be replaced with `Unknown`.
 
 #### `scikit-learn-silva`
 
