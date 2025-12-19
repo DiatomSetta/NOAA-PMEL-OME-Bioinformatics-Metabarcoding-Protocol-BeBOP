@@ -429,7 +429,12 @@ TBD
 
 
 
-### Decontamination steps
+### Data Decontamination and Quality Assurance Processing Workflow
+![Sequencing-data-decontamination-and-quality-assurance (1)](https://github.com/user-attachments/assets/7a46aa0d-1247-4550-b19a-0989b80c4af4)
+
+Unfiltered ASV tables output from any bioinformatics pipeline have the potential for a number of artefacts and issues that should be dealt with before providing those results to the public. OME has chosen to provide ASV tables at three stages of analysis: 1) unfiltered, 2) filtered-trusted, 3) filtered-analytic
+
+
 
 Decontamination occurs after assigning ASVs with revamp and Dada2, to remove ASVs with too few reads or obvious contaminants. The [decontam package](https://doi.org/10.1186/s40168-018-0605-2) (Davis et al., 2018) is used to filter out ASVs, with the following steps:
 
