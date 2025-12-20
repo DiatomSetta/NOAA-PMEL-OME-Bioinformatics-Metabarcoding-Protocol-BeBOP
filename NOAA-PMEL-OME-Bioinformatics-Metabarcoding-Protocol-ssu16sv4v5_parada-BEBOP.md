@@ -605,7 +605,7 @@ At this point in the workflow the filtered-trusted dataset is peeled off for sub
 
 Remove any ASV represented by only a single read across the dataset.
 
-**Step 10 – Patter of Presence [ASV]**
+**Step 10 – Pattern of Presence [ASV]**
 
 Remove any ASV that is only found in one sample in the dataset (or user-set sample count cutoff).
 
@@ -629,9 +629,19 @@ The default for this step is 10,000 reads. A user can supply any cutoff for remo
 
 After filtering, which can be more or less stringent depending on needs, the analytic dataset is ready for submission to [ODE](https://www.oceandnaexplorer.org/) or for analysis for a manuscript. The final dataset and filtering choices will be supplied with the manuscript-specific GitHub code repository.
    
+### Data and metadata submission strategy
+
+The OME datamanagement plan includes submission of all data to three distinct repositories:
+
+1) Raw reads are submitted to NCBI's sequence read archive (SRA)
+2) Unfiltered ASV tables and taxonomy assignments are submitted to [ODE](https://www.oceandnaexplorer.org/) and manuscript-specific code repository.
+3) Filtered-Trusted ASV tables and taxonomy assignments are submitted to [ODE](https://www.oceandnaexplorer.org/) and [OBIS](https://obis.org/).
+4) Filtered-Analysic ASV tables and taxonomy assignments are submitte to [ODE](https://www.oceandnaexplorer.org/) and manuscript-specific code repository.
+5) Sample metadata are submitted with raw read records to NCBI's SRA, to ODE and OBIS through FAIR eDNA terms mapped to Darwin core controlled vocabulary, through the manuscript-specific code repository, and through an archive with NCEI.
 
 ### Marker-specific recommendations – ssu16sv4v5_parada / Universal-16S-V4V5-Parada
 
+TBD
 
 # PERSONNEL REQUIRED
 
