@@ -1,4 +1,4 @@
----
+<img width="468" height="25" alt="image" src="https://github.com/user-attachments/assets/4a9a55e8-3284-4806-9b2b-085ac0551cef" /><img width="468" height="25" alt="image" src="https://github.com/user-attachments/assets/ff820449-b19a-4fa8-bda4-3dc4a538e0b1" />---
 # MIOP terms
 methodology category: Omics Analysis
 project: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group protocols
@@ -129,7 +129,7 @@ screen_contam_0_1:
       default: 1
    - filtered-analytic:
       default: 1
-screen_contam_method: 'TBD check - 1) The composition of the positive control is used to estimate a maximum vector contamination, which is then subtracted proportionally from all ASVs in the run to remove background tag jumping. 2) Next negative control contaminants are removed either as a wholesale removal of the impacted ASV, or as a proportional removal. 3) ASVs assigned to common contaminants are removed: human, food products, pets, common lab/consumable contaminants, laboratory controls.'
+screen_contam_method: 'TBD check - 1) The composition of the positive control is used to estimate a maximum vector contamination, which is then subtracted proportionally from all ASVs in the run to remove background tag jumping. 2) Next negative control contaminants are removed either as a wholesale removal of the impacted ASV, or as a partial removal. 3) ASVs assigned to common contaminants are removed: human, food products, pets, common lab/consumable contaminants, laboratory controls.'
 screen_nontarget_method: 'TBD check - 1) Contaminanting off-target organisms were removed as described in screen_contam_method, removing common contaminants including human, food products, pets, common lab/consumable contaminants, laboratory controls.'
 screen_other:
    - filtered-trusted:
@@ -377,35 +377,134 @@ There is a rare designation in the SILVAngs output that sets the taxonomy assign
 
 #### `scikit-learn-silva`
 
-The 18Sv4 rRNA, 18Sv9 rRNA, 16Sv4 rRNA, and ITS1 regions are classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers are trained using the [PR2 database(v5.1.0)](https://pr2-database.org/) (Guillou et al., 2012) for 18Sv4 rRNA and 18Sv9 rRNA, [silva (v138.99)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013), and a [custom curated database](https://zenodo.org/records/15351664) for the ITS1 region. Each database is curated, extracted to the region of interest, and used to train a naive bayesian taxonomic classifier by:
+The `ASVs.fa` amplicon sequence variant output from the REVAMP pipeline 16Sv45 rRNA region is classified using [Qiime2 (v.2024.10)](https://qiime2.org/) (Bolyen et al., 2019) feature classifier's [naive bayesian classifier scikit-learn](https://scikit-learn.org/stable/modules/naive_bayes.html). Sci-kit learn classifiers is trained using the [silva (v138.1)](https://docs.qiime2.org/2022.11/data-resources/) for 16Sv4 rRNA (Quast et al., 2013). Each database is curated, extracted to the region of interest, and used to train a naive bayesian taxonomic classifier by:
 
-1) Extracting the region of interest from all sequences in the database with primers used for amplification (see [NOAA PMEL OME Github](https://github.com/NOAA-PMEL/Ocean-Molecular-Ecology)).
+1) Downloading the full-length silva (v138.1) taxonomy and sequences.
 ```
-qiime feature-classifier extract-reads
+wget https://data.qiime2.org/2024.10/common/silva-138-99-seqs.qza
+wget https://data.qiime2.org/2024.10/common/silva-138-99-tax.qza
+```
+
+2) Extracting the region of interest from all sequences in the database with primers used for amplification (see [NOAA PMEL OME Github](https://github.com/NOAA-PMEL/Ocean-Molecular-Ecology)).
+
+```
+# extract region of interest with primers and target length
+qiime feature-classifier extract-reads \
+  --i-sequences silva-138-99-seqs.qza \
+  --p-f-primer GTGYCAGCMGCCGCGGTAA \
+  --p-r-primer CCGYCAATTYMTTTRAGTTT \
+  --p-min-length 300 \
+  --p-max-length 500 \
+  --o-reads silva_v138.99_v4_extracts.qza
 # --p-min-length and --p-max-length vary by region and are included in the config file.
+
+# Get taxa that remain from extracts
+qiime rescript filter-taxa \
+    --i-taxonomy silva-138-99-tax.qza \
+    --m-ids-to-keep-file silva_v138.99_v4_extracts.qza \
+    --o-filtered-taxonomy silva_v138.99_v4_tax.qza
+
+# number of seqs, lengths, etc.
+qiime feature-table tabulate-seqs \
+  --i-data silva_v138.99_v4_extracts.qza \
+  --o-visualization silva_v138.99_v4_extracts.qzv
+
 ```
-2) Adding sequences that contain the region of interest but do not contain the primer region by alignment to the extracted sequence database. This step is done twice for some metabarcoding regions until ~50-70% of query sequences are retained following [recommendations](https://forum.qiime2.org/t/using-rescripts-extract-seq-segments-to-extract-reference-sequences-without-pcr-primer-pairs/23618) for qiime2 scikit-learn classifiers (see config file).
+3) Adding sequences that contain the region of interest but do not contain the primer region by alignment to the extracted sequence database. This step is done twice for some metabarcoding regions until ~50-70% of query sequences are retained following [recommendations](https://forum.qiime2.org/t/using-rescripts-extract-seq-segments-to-extract-reference-sequences-without-pcr-primer-pairs/23618) for qiime2 scikit-learn classifiers (see config file).
+
 ```
-qiime rescript extract-seq-segments
+# add sequences that did not contain primers, but do have the region of interest
+qiime rescript extract-seq-segments \
+    --i-input-sequences silva-138-99-seqs.qza \
+    --i-reference-segment-sequences silva_v138.99_v4_extracts.qza \
+    --p-perc-identity 0.8 \
+    --p-min-seq-len 150 \
+    --p-threads 5 \
+    --o-extracted-sequence-segments silva_v138.99_v4_extracts-01.qza \
+    --o-unmatched-sequences silva_v138.99_v4_unmatched-extracts-01.qza \
+    --verbose 
 # --p-perc-identity and --p-min-seq-len vary by region and are included in the config file.
+
+# Compare counts of seqs
+qiime feature-table tabulate-seqs \
+  --i-data /home/poseidon/setta/ref_db/silva/silva_v138.1/silva_v138.99_v4_extracts-01.qza \
+  --o-visualization /home/poseidon/setta/ref_db/silva/silva_v138.1/silva_v138.99_v4_extracts-01.qzv
 ```
-3) Taxa of sequences no longer in the database are filtered out.
+
+*Note: Step 3 is repeated until ~50-70% query sequnces retained, with the `--o-extracted-sequence-segments` output file used in the `--i-reference-segment-sequences` input for the next iteration. After the first iteration, increase the `--p-perc-identity` to 0.9. For 16Sv4 region, only needed 1 iteration.*
+
+4) Filtering out taxonomies for sequences removed during extraction of full length database.
 ```
-qiime rescript filter-taxa
+# Get taxa that remain:
+qiime rescript filter-taxa \
+    --i-taxonomy silva-138-99-tax.qza \
+    --m-ids-to-keep-file silva_v138.99_v4_extracts-01.qza \
+    --o-filtered-taxonomy silva_v138.99_v4_tax-01.qza
+# replace `--m-ids-to-keep-file` with extracted sequence file from the last iteration of step 3.
 ```
-4) Sequences are dereplicated to remove any duplicates.
+
+5) Dereplicating the extracted reads, retaining identical sequence records that have differing taxonomies. 
+
 ```
-qiime rescript dereplicate
-# --p-mode uniq
+qiime rescript dereplicate \
+    --i-sequences silva_v138.99_v4_extracts-01.qza \
+    --i-taxa silva_v138.99_v4_tax-01.qza \
+    --p-mode 'uniq' \
+    --o-dereplicated-sequences silva_v138.99_v4_uniq-seqs.qza \
+    --o-dereplicated-taxa silva_v138.99_v4_uniq-tax.qza
 ```
-5) The taxonomic classifier for each region of interest is trained using qiime2's feature-classifier.
+
+6) Evaluating reference taxonomy and sequences.
+
 ```
-qiime feature-classifier fit-classifier-naive-bayes
+# original databases
+qiime metadata tabulate \
+    --m-input-file silva-138-99-seqs.qza \
+    --o-visualization silva-138-99-seqs.qzv
+# extracted and dereplicated databases  
+qiime metadata tabulate \
+    --m-input-file silva_v138.99_v4_uniq-seqs.qza \
+    --o-visualization silva_v138.99_v4_uniq-seqs.qzv
+# extracted and dereplicated databases    
+qiime rescript evaluate-taxonomy \
+    --i-taxonomies silva_v138.99_v4_uniq-tax.qza \
+    --o-taxonomy-stats silva_v138.99_v4_uniq-tax.qzv
 ```
-6) The trained classifiers are used to classify ASVs using qiime2's feature classifier.
+
+7) Training the taxonomic classifier for each region of interest using qiime2's feature-classifier.
 ```
-qiime tools export
+qiime feature-classifier fit-classifier-naive-bayes \
+  --i-reference-reads silva_v138.99_v4_uniq-seqs.qza \
+  --i-reference-taxonomy silva_v138.99_v4_uniq-tax.qza \
+  --o-classifier silva_v138.99_v4_uniq-classifier.qza
 ```
+
+8) The trained classifiers are used to classify ASVs using qiime2's feature classifier.
+```
+# import fasta file from revamp into qiime formatted file
+qiime tools import \
+  --type 'FeatureData[Sequence]' \
+  --input-path 16Sv4_ASVs.fa  \
+  --output-path 16Sv4_ASVs.qza
+
+# run classifier
+qiime feature-classifier classify-sklearn \
+   --i-reads 16Sv4_ASVs.qza \
+   --i-classifier silva_v138.99_v4_uniq-classifier.qza \
+   --p-n-jobs 4 \
+   --o-classification 16Sv4_tax_silva_sklearn.qza
+
+# export taxonomy into tab delimited file
+qiime tools export \
+  --input-path 16Sv4_tax_silva_sklearn.qza \
+  --output-path 16Sv4_tax_silva_sklearn
+```
+
+Final output file is the taxonomy.tsv file within the 16Sv4_tax_silva_sklearn directory with `Feature ID` (ASVs), `Taxon` (taxonomy separated by semicolons), and `Confidence` (confidence score of the lowest taxonomic level). Silva taxonomy output includes 7 levels; domain, phylum, class, order, family, genus, species.
+
+#### Taxonomy choices
+
+After running all of the above taxonomic classifiers, we still need a choice taxonomy to submit to Ocean DNA Explorer ([ODE](https://www.oceandnaexplorer.org/)) and Ocean Biodiversity Information System ([OBIS](https://obis.org/)). This choice differs between markers and is currently under investigation (Pers. comm. Sam Setta, Zack Gold, Sean McAllister). Once that choice is made, it then is crosswalked using [edna2obis](https://github.com/aomlomics/edna2obis) with the World Register of Marine Species ([WoRMS](https://www.marinespecies.org/)) and the OBIS and Global Biodiversity Information Facility ([GBIF](https://www.gbif.org/)) taxonomic backbones for submission. This field represents the best taxonomic assignment (given for the controlled Darwin core observation records) for each ASV, though independent assignments through the methods listed above are still kept as optional user fields. 
 
 ### Data Decontamination and Quality Assurance Processing Workflow
 ![Sequencing-data-decontamination-and-quality-assurance (1)](https://github.com/user-attachments/assets/7a46aa0d-1247-4550-b19a-0989b80c4af4)
@@ -415,42 +514,121 @@ Unfiltered ASV tables output from any bioinformatics pipeline have the potential
    2) filtered-trusted - An ASV table filtered to remove ASVs and samples with clear issues affecting their use in any context. Submitted to [ODE](https://www.oceandnaexplorer.org/) and Ocean Biodiversity Information System ([OBIS](https://obis.org/)).
    3) filtered-analytic - Starting from the filtered-trusted ASV table, additional filtering is applied for a given more detailed analytic context. Submitted to [ODE](https://www.oceandnaexplorer.org/) and as part of a code repository on GitHub associated with a particular manuscript.
 
-The OME workflow for data decontamination and quality assurance is available [here](https://github.com/DiatomSetta/Sequencing-data-decontamination-and-quality-assurance/tree/main).
+The OME workflow for data decontamination and quality assurance is available [here](https://github.com/DiatomSetta/Sequencing-data-decontamination-and-quality-assurance/tree/main). In brackets below are the type of data being filtered, either ASVs or Samples.
 
 **Part 1 – Sequencing Run-Based Filtering**
 
 **Step 1 – Filter read type** 
+
 By default, REVAMP only produces ASV tables from merged forward and reverse reads. However, some pipelines product multiple datasets from single end and merged reads (e.g. [Anacapa](https://github.com/limey-bean/Anacapa)), and this step allows the user to filter those read types depending on use. Merged reads are more accurate, and OME primarily focuses on that result. However, there are applications of single end ASVs, including 1) instances where amplicons are larger and provide no overlap of the forward and reverse reads. This is the case for Eukaryota with the `ssu16sv4v5_parada` assay for instance. 2) Failed sequencing runs where only one read (forward or reverse) was successful.
 
-**Step 2 – Filter tag-jumping**
-If the sequencing run includes a high-quality positive control, that control can be used to estimate the occurrence of tag-jumping or index hopping. The ASV(s) associated with the positive control sample are first identified, after which the maximum relative proportion of environmental reads jumping into the positive control is calculated as maximum vector contamination. Next that maximum contamination proportion is subtracted from each ASV's total read count.
+**Step 2 – Filter tag-jumping [ASV]**
 
-**Step 3 – Filter negative control contaminants**
-If a sequencing run has negative controls sequenced, those negative controls can be used to remove contaminants. It is important to consider the source of the negative control, so that the filtering can be applied appropriately to samples. For example, OME collects negative controls throughout cruises (field blanks), during extraction (extraction blanks), and during PCR (PCR blanks). Depending on which samples each of these negative controls is associated with, the clearance of contaminating sequences may not apply to all samples on a sequencing run evenly. For those samples that negative controls do apply to, OME filters using two strategies: 1) wholesale removal of the impacted ASV, or 2) proportional removal
+If the sequencing run includes a high-quality positive control, that control can be used to estimate the occurrence of tag-jumping or index hopping. The ASV(s) associated with the positive control sample are first identified, after which the maximum relative proportion of environmental reads jumping into the positive control is calculated as maximum vector contamination. Next, that maximum contamination proportion is subtracted from each ASV's total read count.
 
+**Step 3 – Filter negative control contaminants [ASV]**
 
+If a sequencing run has negative controls sequenced, those negative controls can be used to remove contaminants. It is important to consider the source of the negative control, so that the filtering can be applied appropriately to each sample. For example, OME collects and sequences negative controls throughout cruises (field blanks) and during extraction (extraction blanks). Depending on which samples each of these negative controls is associated with, the clearance of contaminating sequences may not apply to all samples on a sequencing run evenly. For those samples that negative controls do apply to, OME filters using two strategies: 1) wholesale removal of the impacted ASV, or 2) partial removal.
 
+For the partial removal, ASVs found in the negative control are slated for removal if the following conditions are met:
+   1) ASV occurs in less than 10 samples.
+   2) ASV does not occur as an abundant (≥10% per sample max occurrence) ASV in any sample.
+   3) ASV abundance is outside a 95% confidence interval for a normal distribution from mean total reads and less than the total sum of reads in the negative control.
 
+Both approaches are valid. OME primarily uses the partial removal approach, since there is a high likelihood that an abundant ASV from real environmental samples might tag jump into the negative control. If it isn't fully removed during Step 2, then this would lead to the removal of an ecologically important ASV from the dataframe.
 
+TBD - check wording.
+
+**Step 4 – Remove positive and negative control samples [Sample]**
+
+After they are used in steps 2 and 3, the positive and negative control samples can be removed from the dataset.
+
+**Step 5 – Remove known contaminants and off-targets [ASV]**
+
+There are a number of typical contaminants that may make their way into envrionmental samples, particularly for low DNA applications of eDNA metabarcoding. These can include DNA from the humans processing the samples, food items (particularly meats), pets (dogs, cats, etc.), and lab controls (gblocks for positive controls, positive controls from other experiments). In addition, some markers were "designed" to target particular taxa, but may in fact amplify other organisms that were not originally intended as the target. This step allows users to designate known contaminants and off-targets to remove them from the data.
+
+Users can supply a list of typical lab contaminant taxonomies (one per line), which should include the potential for incomplete taxonomic assignment of the contaminant in the current dataset. Users can also supply the sequence of contaminants for direct removal of matching ASVs (independent of taxonomy). This latter is useful for removing the sequences of synthetic controls, which may or may not be assigned to the appropriate taxonomy in a traditional workflow.
+
+OME known contaminant list:
+* Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;Homo sapiens #Human contamination potential during collection and lab processing
+* Eukaryota;Chordata;Mammalia;Primates;Hominidae;Homo;NA #Human contamination potential during collection and lab processing
+* Eukaryota;Chordata;Mammalia;Primates;Hominidae;NA;NA #Human contamination potential during collection and lab processing
+* Eukaryota;Chordata;Mammalia;Primates;NA;NA;NA #Human contamination potential during collection and lab processing, primates unlikely in the NE Pacific Ocean
+* Eukaryota;Chordata;Mammalia;Artiodactyla;Bovidae;Bos;Bos taurus #Domestic cattle contamination potential from foods
+* Eukaryota;Chordata;Mammalia;Artiodactyla;Suidae;Sus;Sus scrofa #Wild boar contamination potential from foods
+* Eukaryota;Chordata;Aves;Galliformes;Phasianidae;Gallus;Gallus gallus #Chicken contamination potential from foods
+* Eukaryota;Chordata;Mammalia;Carnivora;Canidae;Canis;Canis lupus #Wolf/dog contamination potential from pet dander/hair
+* Eukaryota;Chordata;Mammalia;Carnivora;Felidae;Felis;Felis catus #Cat contamination potential from pet dander/hair
+* Eukaryota;Chordata;Aves;Accipitriformes;Accipitridae;Harpagornis;Harpagornis moorei #Haast's eagle gblock positive control ssu12sv5v6_mifish_u_sales
+* Eukaryota;Chordata;Mammalia;Artiodactyla;Camelidae;Camelus;Camelus dromedarius #Dromedary camel gblock positive control ssu16sv4v5_parada
+* Eukaryota;Bigyra__p;Bigyra;Bicosoecida;Halocafeteria__f;Halocafeteria;Halocafeteria seosinensis #halophilic nanoflagellate gblock positive control ssu18sv9_amaralzettler & ssu18sv8_machida
+* Eukaryota;Bacillariophyta;Bacillariophyceae;Naviculales;Diadesmidaceae;Luticola;Luticola ventricosa #Freshwater Antarctic diatom gblock positive control ssu18sv4_stoeck & ITS1_sterling
+* Eukaryota;Chordata;Aves;Dinornithiformes;Dinornithidae;Dinornis;Dinornis giganteus #Giant Moa gblock positive control COI_1835-2198_lerayfolmer
+* Eukaryota;Chordata;Mammalia;Artiodactyla;Delphinidae;Orcaella;Orcaella brevirostris #Irrawaddy river dolphin gblock positive control dLoop_Baker
+* Eukaryota;Chordata;Aves;Columbiformes;Raphidae;Raphus;Raphus cucullatus #Dodo bird gblock positive control lsu16s_2434-2571_kelly
+* Eukaryota;Chordata;Actinopteri;Perciformes;Sebastidae;Sebastes;Sebastes inermis #Japanese rockfish gblock positive control cytB_MiSebastes
+* Eukaryota;Chordata;Mammalia;Perissodactyla;Rhinocerotidae;Coelodonta;Coelodonta antiquitatis #Woolly rhinoceros gblock positive control lsu16s_2051-2438_mideca
+* Eukaryota;Chordata;Mammalia;Sirenia;Dugongidae;Hydrodamalis;Hydrodamalis gigas #Steller's sea cow gblock positive control COI_MollCOI253
+* Eukaryota;Chordata;Mammalia;Pilosa;Megatheriidae;Megatherium;Megatherium americanum #Giant sloth gblock positive control lsu16s_Mol16S & DC_MA_nad2
+* Eukaryota;Chordata;Aves;Columbiformes;Columbidae;Ectopistes;Ectopistes migratorius #Passenger pigeon gblock positive control Pycno_EM_nad5
+* Eukaryota;Chordata;Mammalia;Artiodactyla;Camelidae;Camelus;NA #Camel gDNA positive control ssu16sv4v5_parada_OSUmod & ssu18sv8_machida_OSUmod
+* Eukaryota;Chordata;Mammalia;Carnivora;Mustelidae;Mustela;Mustela putorius #Ferret gDNA positive control ssu16sv4v5_parada_OSUmod & ssu18sv8_machida_OSUmod
+* ```GAGCGGAGAGATAACTATAATGCTGCTTATAATCTCTCTGTCGTTGCTAACGTTTATAGTCTAGTCTCATTATAATTGTATGCTATTGAGGCATTGATTAATACTGGAAAACATTTGAAATAAACTAATTTATACGACAGAAATCGTGTACCTACTAAATCTCTTTAATGTAAGTTCTGACTAATTCGTACTTTGTTAAGAACTTACATTTTAATAATAGAGGATATATGTTTTATTTTTATGATCTATTGATGTTCTTAAGACTGCAATTTATATAATGAGGTAATATTTGCGGTAAATCCTAGTGCAATGGCAATTTTTTACTTTTGTTCTAAAGAAGAGATAACGTGAGTGCAGTTATCATTAATGTAGAAATTGGAAAGATTCTTGGGCCTCCACCTTTAGATAGTGTTTACTCTTTTATAAAGGAGCTATTAATTATGTCTTGCGAAGATTCAAAAAGGTAAGTCAATTTGGCTGATTCGAAAAGACGGACTTCAAAGTTACCTAACAATAGTTGTGGGTCCGTAACAAAATCTTTTTAATAAGTCTCCGTAAGTGTTGGTTGAATAGCCCTGATCGGTTTAACCAGAAGTTCAAATATATTATTTTATGATTTTTGAGTCAGAATGTGTTACCTTACAGAAATTAAGATCG``` #Random 32% GC sequence gblock positive control COI_Folmer
+
+Off targets are specified by taxonomy or ASV length. For example, ssu12sv5v6_mifish_u_sales has a known bacterial off-target greater than 210 bp. For the MiFish assay, off targets can be removed by size selection (e.g. keep <210 bp) or taxonomy (e.g. keep Eukaryota).
+
+**Part 2 – Merging datasets**
+
+Data from a single project may end up on multiple sequencing runs. This part of the workflow allows us to combine multiple runs to make a single project-based dataset. ASVs with identical sequences are merged, new count tables generated, and conflicting taxonomies identified and sorted.
+
+**Part 3 – Depth, diversity, replicate filtering**
+
+**Step 6 – Remove extreme low sequencing depth samples [Sample]**
+
+Remove any sample with less than 1,000 total reads. These samples are likely poorly sequenced and the data is not a good representation of the environment.
+
+**Step 7 – Remove extreme low diversity samples [Sample]**
+
+Remove any sample that contains a single ASV with >99% of the reads mapping to it. This situation is unlikely in the environment, and likely indicates a problematic sample.
+
+**Step 8 – Dissimilarity between replicates [Sample]**
+
+For this analysis, sample relationships are graphed in ordination space and a centroid calculated for any pair of replicates. If a sample within a group of replicates has a distance to that centroid greater than a maximum distance cut off (TBD), then it is removed from the dataset.
+
+**Filtered-Trusted Dataset**
+
+At this point in the workflow the filtered-trusted dataset is peeled off for submission to [ODE](https://www.oceandnaexplorer.org/) and [OBIS](https://obis.org/).
+
+**Part 4 – Final analytic filtering and optional steps**
+
+**Step 9 – Remove Singletons [ASV]**
+
+Remove any ASV represented by only a single read across the dataset.
+
+**Step 10 – Patter of Presence [ASV]**
+
+Remove any ASV that is only found in one sample in the dataset (or user-set sample count cutoff).
+
+**Step 11 – Remove n-tons [ASV]**
+
+The default for this step is to skip this filtering, though a user can set any total read count cut off for removing ASVs from the dataset.
+
+**Step 12 – Remove low diversity samples [Sample]**
+
+The default for this step is to skip this filtering, though a user can set any cutoff to eliminate samples that are majority dominated by a single species (x%).
+
+**Step 13 – Remove ASVs assigned to Unknowns [ASV]**
+
+Remove any ASV assigned to a list of taxa strings that are associated with Unknown assignments. For REVAMP: `Unknown;NA;NA;NA;NA;NA;NA` or `Environmental Unknown;NA;NA;NA;NA;NA;NA`.
+
+**Step 14 – Remove low sequencing depth samples [Sample]**
+
+The default for this step is 10,000 reads. A user can supply any cutoff for removing samples based on their total read count/depth.
+
+**Filtered-Analytic Dataset**
+
+After filtering, which can be more or less stringent depending on needs, the analytic dataset is ready for submission to [ODE](https://www.oceandnaexplorer.org/) or for analysis for a manuscript. The final dataset and filtering choices will be supplied with the manuscript-specific GitHub code repository.
    
-**2) Discarding samples with low number of reads.**
-
-Discard samples with less than 10,000 reads, to filter out samples with low sequencing depth.
-
-**3) Clearance of Negative Control Contaminants.**
-
-Identify contaminant ASVs that occurred in field, extraction, and PCR negative controls using the [microDecon package](https://github.com/donaldtmcknight/microDecon). Compare the prevalence of ASVs in blanks to those in samples and remove contaminant ASVs.
-   
-**4) Remove obvious contaminants (e.g. human, rat, cat, dog).**
-
-Remove any ASVs identified as human (*Homo sapiens*), dog (*Canis familiaris*), cat (*Felis catus*), or other common obvious contaminants.
-
-**5) Remove samples that have one ASV making up 99% of total sequences.**
-
-Remove samples dominated (>99% abundance) by one ASV, suggesting an error with sample processing or sequencing.
-
-
-
 
 ### Marker-specific recommendations – ssu16sv4v5_parada / Universal-16S-V4V5-Parada
 
