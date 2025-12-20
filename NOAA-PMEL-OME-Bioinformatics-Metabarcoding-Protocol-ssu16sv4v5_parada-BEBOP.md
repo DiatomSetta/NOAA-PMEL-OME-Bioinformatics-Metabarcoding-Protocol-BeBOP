@@ -1,4 +1,4 @@
-<img width="468" height="25" alt="image" src="https://github.com/user-attachments/assets/4a9a55e8-3284-4806-9b2b-085ac0551cef" /><img width="468" height="25" alt="image" src="https://github.com/user-attachments/assets/ff820449-b19a-4fa8-bda4-3dc4a538e0b1" />---
+---
 # MIOP terms
 methodology category: Omics Analysis
 project: NOAA Pacific Marine Environmental Laboratory Ocean Molecular Ecology Group protocols
